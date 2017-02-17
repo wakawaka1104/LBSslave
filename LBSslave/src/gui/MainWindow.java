@@ -1,6 +1,5 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.net.InetAddress;
@@ -13,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import tcpIp.IOHandler;
 import tcpIp.SlaveClient;
 
 public class MainWindow extends JFrame {
@@ -20,6 +20,9 @@ public class MainWindow extends JFrame {
 	private JPanel contentPane;
 	private final Action action = new SwingAction();
 	private JLabel stateLabel = new JLabel("none");
+	private final JButton funcTestButton = new JButton("func test");
+	private final Action funcBtnAction = new FuncBtnSwingAction();
+
 
 	/**
 	 * Launch the application.
@@ -45,17 +48,22 @@ public class MainWindow extends JFrame {
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		contentPane.setLayout(null);
 
 		JButton testButton = new JButton("test button");
+		testButton.setBounds(5, 236, 424, 21);
 		testButton.setAction(action);
 
 
-		contentPane.add(testButton, BorderLayout.SOUTH);
+		contentPane.add(testButton);
+		stateLabel.setBounds(5, 5, 333, 231);
 
 
-		contentPane.add(stateLabel, BorderLayout.CENTER);
+		contentPane.add(stateLabel);
+		funcTestButton.setAction(funcBtnAction);
+		funcTestButton.setBounds(320, 5, 109, 41);
+		contentPane.add(funcTestButton);
 	}
 
 	private class SwingAction extends AbstractAction {
@@ -68,11 +76,30 @@ public class MainWindow extends JFrame {
 			try{
 				InetAddress addr = InetAddress.getLocalHost();
 				SlaveClient sc = new SlaveClient(addr,10000);
-				sc.Send("test message");
+				sc.open();
+//				sc.Send("test message");
 			}catch (Exception error) {
 				System.err.println(error);
 			}
 
+		}
+	}
+	private class FuncBtnSwingAction extends AbstractAction {
+		public FuncBtnSwingAction() {
+			putValue(NAME, "FuncBtnSwingAction");
+			putValue(SHORT_DESCRIPTION, "func test action");
+		}
+		public void actionPerformed(ActionEvent e) {
+			//test function
+
+			//IOHandler
+			IOHandler io = new IOHandler();
+			String test = "test string";
+			io.stringToBuf(test);
+
+			System.out.println("stringToBuf = " + io.getWriteBuffer().toString());
+
+			System.out.println("bufToString = " + io.bufToString());
 		}
 	}
 }

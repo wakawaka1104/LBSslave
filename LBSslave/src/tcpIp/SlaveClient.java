@@ -17,7 +17,7 @@ import java.util.Set;
 public class SlaveClient {
 
 	// member
-	private String server = "";
+//	private String server = "";
 	private int port = -1;
 	private static final int BUF_SIZE = 1024;
 	private InetAddress addr = null;
@@ -29,7 +29,7 @@ public class SlaveClient {
 
 	// constructor
 	public SlaveClient(String server, int port) {
-		this.server = server;
+//		this.server = server;
 
 		try {
 			s = new Socket(server, port);
@@ -42,18 +42,26 @@ public class SlaveClient {
 
 	public SlaveClient(InetAddress addr, int port) {
 		this.addr = addr;
+		this.port = port;
+	}
 
+	public void open(){
+		//channel open
 		try {
-			s = new Socket(addr, port);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			channel.socket().setReuseAddress(true);
+			channel.socket().bind(new InetSocketAddress(addr,port));
+			//non blocking mode
+			channel.configureBlocking(false);
+			selector = Selector.open();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	//public function
-	public void Send(String data){
+	public void send(String data){
 		try {
 			//send
 			OutputStream os = s.getOutputStream();
@@ -75,18 +83,9 @@ public class SlaveClient {
 		}
 	}
 
-	public void AsyncSend(String data){
+	public void asyncSend(String data){
 		try {
-			//channel open
-			channel.socket().setReuseAddress(true);
-			channel.socket().bind(new InetSocketAddress(addr,port));
-			//non blocking mode
-			channel.configureBlocking(false);
-
-			selector = Selector.open();
-			channel.register(selector, SelectionKey.OP_READ,new ReadHandler());
-
-
+			channel.register(selector,SelectionKey.OP_WRITE ,new IOHandler());
 			while(selector.select() > 0){
 
 				Set<SelectionKey> keys = selector.selectedKeys();
@@ -95,14 +94,12 @@ public class SlaveClient {
 					it.remove();
 
 					IOHandler handler = (IOHandler)key.attachment();
+					handler.stringToBuf(data);
 					handler.handle(key);
 				}
 
 			}
-
-
 		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 	}
