@@ -3,6 +3,7 @@ package gui;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -12,8 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import tcpIp.IOHandler;
 import tcpIp.SlaveClient;
+import tcpIp.TestServer;
 
 public class MainWindow extends JFrame {
 
@@ -92,6 +93,7 @@ public class MainWindow extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			//test function
 
+			/*
 			//IOHandler
 			IOHandler io = new IOHandler();
 			String test = "test string";
@@ -100,6 +102,23 @@ public class MainWindow extends JFrame {
 			System.out.println("stringToBuf = " + io.getWriteBuffer().toString());
 
 			System.out.println("bufToString = " + io.bufToString());
+			*/
+			InetAddress addr;
+			try {
+				addr = InetAddress.getLocalHost();
+				TestServer ts = new TestServer(addr, 11111);
+				ts.open();
+
+				SlaveClient sc = new SlaveClient(addr, 22222);
+				sc.open();
+
+				sc.asyncSend("test message");
+
+			} catch (UnknownHostException e1) {
+				System.err.println("aaa");
+				e1.printStackTrace();
+			}
+
 		}
 	}
 }

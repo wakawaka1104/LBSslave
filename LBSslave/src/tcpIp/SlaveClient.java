@@ -14,7 +14,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
-public class SlaveClient {
+public class SlaveClient implements Runnable{
 
 	// member
 //	private String server = "";
@@ -34,8 +34,10 @@ public class SlaveClient {
 		try {
 			s = new Socket(server, port);
 		} catch (UnknownHostException e) {
+			System.err.println("SlaveClient:constructor[error]");
 			e.printStackTrace();
 		} catch (IOException e) {
+			System.err.println("SlaveClient:constructor[error]");
 			e.printStackTrace();
 		}
 	}
@@ -45,16 +47,22 @@ public class SlaveClient {
 		this.port = port;
 	}
 
+	public void run(){
+
+	}
+
 	public void open(){
 		//channel open
 		try {
 			channel.socket().setReuseAddress(true);
 			channel.socket().bind(new InetSocketAddress(addr,port));
+			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString() + ":" + port + "]にバインドしました。");
 			//non blocking mode
 			channel.configureBlocking(false);
 			selector = Selector.open();
 
 		} catch (IOException e) {
+			System.err.println("SlaveClient:open()[error]");
 			e.printStackTrace();
 		}
 
@@ -100,6 +108,7 @@ public class SlaveClient {
 
 			}
 		} catch (IOException e) {
+			System.err.println("SlaveClient;asyncSend()[error]");
 			e.printStackTrace();
 		}
 	}
