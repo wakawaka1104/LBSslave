@@ -107,10 +107,13 @@ public class MainWindow extends JFrame {
 			try {
 				addr = InetAddress.getLocalHost();
 				TestServer ts = new TestServer(addr, 11111);
-				ts.open();
+				SlaveClient sc = new SlaveClient(addr, 11111);
 
-				SlaveClient sc = new SlaveClient(addr, 22222);
-				sc.open();
+				Thread serverThread = new Thread(ts);
+				Thread clientThread = new Thread(sc);
+
+				serverThread.start();
+				clientThread.start();
 
 				sc.asyncSend("test message");
 

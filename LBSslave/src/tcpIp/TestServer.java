@@ -28,9 +28,9 @@ public class TestServer implements Runnable{
 		this.addr = addr;
 		this.port = port;
 	}
-	
+
 	public void run(){
-		
+		open();
 	}
 
 	public void open(){
@@ -39,7 +39,7 @@ public class TestServer implements Runnable{
 			selector = Selector.open();
 			serverChannel = ServerSocketChannel.open();
 			serverChannel.configureBlocking(false);
-			serverChannel.socket().bind(new InetSocketAddress(addr,port));
+			serverChannel.socket().bind(new InetSocketAddress(port));
 			serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 			System.out.println("TestServerが起動しました(port=" + serverChannel.socket().getLocalPort() +":[connect]");
 
