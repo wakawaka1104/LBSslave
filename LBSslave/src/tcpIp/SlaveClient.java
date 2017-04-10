@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -24,14 +23,14 @@ public class SlaveClient implements Runnable{
 	private InetAddress addr = null;
 	private Socket s;
 	private Selector selector;
-	private String data;
+	private String sendData;
 	private boolean sendFlag = false;
 
 	private SocketChannel channel = null;
 	ByteBuffer buf = ByteBuffer.allocate(BUF_SIZE);
 
 	// constructor
-	public SlaveClient(String server, int port) {
+/*	public SlaveClient(String server, int port) {
 //		this.server = server;
 
 		try {
@@ -44,13 +43,14 @@ public class SlaveClient implements Runnable{
 			e.printStackTrace();
 		}
 	}
-
+*/
 	public SlaveClient(InetAddress addr, int port) {
 		this.addr = addr;
 		this.port = port;
 		try {
 			System.out.println("SlaveClient:channel open");
 			channel = SocketChannel.open(new InetSocketAddress(addr, port));
+			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString() + ":" + port + "]にバインドしました。");
 		} catch (IOException e) {
 			System.err.println("SlaveClient:constructor()[error]");
 			e.printStackTrace();
@@ -80,10 +80,9 @@ public class SlaveClient implements Runnable{
 		//channel open
 		try {
 			channel.socket().setReuseAddress(true);
-			channel.socket().bind(new InetSocketAddress(addr,port));
-//			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString() + ":" + port + "]にバインドしました。");
 			//non blocking mode
 			channel.configureBlocking(false);
+
 			selector = Selector.open();
 
 		} catch (IOException e) {
@@ -117,7 +116,7 @@ public class SlaveClient implements Runnable{
 	}
 
 	public void asyncSend(String data){
-		data = this.data;
+		sendData = data;
 		sendFlag = true;
 	}
 
@@ -134,7 +133,7 @@ public class SlaveClient implements Runnable{
 					it.remove();
 
 					IOHandler handler = (IOHandler)key.attachment();
-					handler.stringToBuf(data);
+					handler.stringToBuf(sendData);
 					handler.handle(key);
 				}
 

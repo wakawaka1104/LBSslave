@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import tcpIp.SlaveClient;
-import tcpIp.TestServer;
 
 public class MainWindow extends JFrame {
 
@@ -73,15 +72,6 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "testButtonAction");
 		}
 		public void actionPerformed(ActionEvent e) {
-			stateLabel.setText("sending");
-			try{
-				InetAddress addr = InetAddress.getLocalHost();
-				SlaveClient sc = new SlaveClient(addr,10000);
-				sc.open();
-//				sc.Send("test message");
-			}catch (Exception error) {
-				System.err.println(error);
-			}
 
 		}
 	}
@@ -106,13 +96,8 @@ public class MainWindow extends JFrame {
 			InetAddress addr;
 			try {
 				addr = InetAddress.getLocalHost();
-				TestServer ts = new TestServer(addr, 11111);
 				SlaveClient sc = new SlaveClient(addr, 11111);
-
-				Thread serverThread = new Thread(ts);
 				Thread clientThread = new Thread(sc);
-
-				serverThread.start();
 				clientThread.start();
 
 				sc.asyncSend("test message");
