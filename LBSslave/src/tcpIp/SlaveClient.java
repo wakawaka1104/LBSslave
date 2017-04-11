@@ -1,11 +1,8 @@
 package tcpIp;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -17,11 +14,9 @@ public class SlaveClient implements Runnable{
 
 	// member
 //	private String server = "";
-	private int port = -1;
+
 	private static final int BUF_SIZE = 1024;
 	private static final int WAIT_TIME = 500;
-	private InetAddress addr = null;
-	private Socket s;
 	private Selector selector;
 	private String sendData;
 	private boolean sendFlag = false;
@@ -45,8 +40,6 @@ public class SlaveClient implements Runnable{
 	}
 */
 	public SlaveClient(InetAddress addr, int port) {
-		this.addr = addr;
-		this.port = port;
 		try {
 			System.out.println("SlaveClient:channel open");
 			channel = SocketChannel.open(new InetSocketAddress(addr, port));
@@ -92,36 +85,13 @@ public class SlaveClient implements Runnable{
 
 	}
 
-	//public function
-	public void send(String data){
-		try {
-			//send
-			OutputStream os = s.getOutputStream();
-			DataOutputStream dos = new DataOutputStream(os);
-			dos.writeUTF(data);
-			s.close();
-
-//			//callback receive
-//			InputStream is = s.getInputStream();
-//			DataInputStream dis = new DataInputStream(is);
-//			String s = dis.readUTF();
-//			System.out.println( "コールバック：["+ s + "]を受信しました");
-
-			//close
-//			dis.close();
-			dos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void asyncSend(String data){
+	synchronized public void asyncSend(String data){
 		sendData = data;
 		sendFlag = true;
 	}
 
 	//private function
-	private void _asyncSend(){
+	synchronized private void _asyncSend(){
 		try {
 
 			channel.register(selector,SelectionKey.OP_WRITE ,new IOHandler());
@@ -135,6 +105,7 @@ public class SlaveClient implements Runnable{
 					IOHandler handler = (IOHandler)key.attachment();
 					handler.stringToBuf(sendData);
 					handler.handle(key);
+					return;
 				}
 
 			}
