@@ -33,6 +33,7 @@ public class MainWindow extends JFrame {
 					MainWindow frame = new MainWindow();
 					frame.setVisible(true);
 					Property.getInstance().setLocation(new IndoorLocation(Double.parseDouble(JOptionPane.showInputDialog("x")), Double.parseDouble(JOptionPane.showInputDialog("y")), Double.parseDouble(JOptionPane.showInputDialog("z"))));
+					Property.getInstance().setName(JOptionPane.showInputDialog("name"));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -13,6 +13,7 @@ public class Property {
 	private IndoorLocation lo;
 	private InetAddress ip;
 	private int port = _port;
+	private String name;
 
 	private Property(){
 		try{
@@ -43,6 +44,12 @@ public class Property {
 	}
 	public void setPort(int port) {
 		this.port = port;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	//デバグ用main
