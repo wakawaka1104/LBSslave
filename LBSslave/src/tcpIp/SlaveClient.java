@@ -13,8 +13,6 @@ import java.util.Set;
 public class SlaveClient implements Runnable{
 
 	// member
-//	private String server = "";
-
 	private static final int BUF_SIZE = 1024;
 	private static final int WAIT_TIME = 500;
 	private Selector selector;
@@ -25,20 +23,6 @@ public class SlaveClient implements Runnable{
 	ByteBuffer buf = ByteBuffer.allocate(BUF_SIZE);
 
 	// constructor
-/*	public SlaveClient(String server, int port) {
-//		this.server = server;
-
-		try {
-			s = new Socket(server, port);
-		} catch (UnknownHostException e) {
-			System.err.println("SlaveClient:constructor[error]");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.err.println("SlaveClient:constructor[error]");
-			e.printStackTrace();
-		}
-	}
-*/
 	public SlaveClient(InetAddress addr, int port) {
 		try {
 			System.out.println("SlaveClient:channel open");
@@ -53,11 +37,8 @@ public class SlaveClient implements Runnable{
 	public void run(){
 		open();
 		while(true){
-
 			if(sendFlag){
-
 				_asyncSend();
-
 			}else{
 				try {
 					Thread.sleep(WAIT_TIME);
@@ -65,7 +46,6 @@ public class SlaveClient implements Runnable{
 					e.printStackTrace();
 				}
 			}
-
 		}
 	}
 
@@ -75,14 +55,11 @@ public class SlaveClient implements Runnable{
 			channel.socket().setReuseAddress(true);
 			//non blocking mode
 			channel.configureBlocking(false);
-
 			selector = Selector.open();
-
 		} catch (IOException e) {
 			System.err.println("SlaveClient:open()[error]");
 			e.printStackTrace();
 		}
-
 	}
 
 	synchronized public void asyncSend(String data){
@@ -93,7 +70,6 @@ public class SlaveClient implements Runnable{
 	//private function
 	synchronized private void _asyncSend(){
 		try {
-
 			channel.register(selector,SelectionKey.OP_WRITE ,new IOHandler());
 			while(selector.select() > 0){
 
@@ -107,7 +83,6 @@ public class SlaveClient implements Runnable{
 					handler.handle(key);
 					return;
 				}
-
 			}
 		} catch (IOException e) {
 			System.err.println("SlaveClient;asyncSend()[error]");

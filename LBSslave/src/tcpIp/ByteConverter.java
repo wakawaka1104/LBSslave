@@ -1,0 +1,118 @@
+package tcpIp;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
+import gui.FilePresentationWindow;
+
+public class ByteConverter {
+
+	//singleton pattern
+	private static ByteConverter byteConverter = new ByteConverter();
+
+	private ByteConverter(){}
+
+	public String bufToString(List<ByteBuffer> readBuffer){
+
+		String tmp = "";
+		byte[] byteArray;
+		ByteBuffer buf;
+		for(Iterator<ByteBuffer> it = readBuffer.iterator(); it.hasNext() ;){
+			buf = it.next();
+			byteArray = new byte[buf.remaining()];
+			buf.get(byteArray);
+			tmp += new String(byteArray) + "/";
+		}
+		readBuffer.clear();
+		return tmp;
+	}
+
+	public ImageIcon bufToImageIcon(List<ByteBuffer> readBuffer){
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		for(Iterator<ByteBuffer> it = readBuffer.iterator(); it.hasNext() ;){
+			try {
+				bos.write(it.next().array());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		byte[] imageByteArray = bos.toByteArray();
+		readBuffer.clear();
+
+		return new ImageIcon(imageByteArray);
+	}
+
+	public ByteConverter getInstance(){
+		return byteConverter;
+	}
+
+	//デバグ用main
+	public static void main(String[] args) {
+		//bufToString
+		/*
+		ByteConverter bb = new ByteConverter().getInstance();
+		List<ByteBuffer> readBuffer = new ArrayList<ByteBuffer>();
+		ByteBuffer buf = ByteBuffer.allocate(1024);
+		ByteBuffer buf2 = ByteBuffer.allocate(1024);
+		readBuffer.add(buf);
+		readBuffer.add(buf2);
+		String test = "test message abcdef";
+		byte[] tmp = test.getBytes();
+		String test2 = "2nd test string";
+		byte[] tmp2 = test2.getBytes();
+
+		for(int i = 0; i < tmp.length ; i++ ){
+			readBuffer.get(0).put(tmp[i]);
+		}
+		for(int i= 0; i< tmp2.length ; i++){
+			readBuffer.get(1).put(tmp2[i]);
+		}
+		readBuffer.get(0).flip();
+		readBuffer.get(1).flip();
+
+		System.out.println(bb.bufToString(readBuffer));
+		*/
+
+		//bufToImageIcon
+
+		ByteConverter bb = new ByteConverter().getInstance();
+		List<ByteBuffer> readBuffer = new ArrayList<ByteBuffer>();
+		ByteBuffer buf = ByteBuffer.allocate(1024);
+		BufferedImage readImage;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try{
+			readImage = ImageIO.read(new File("./img/poputepic.png"));
+			ImageIO.write(readImage, "png", baos);
+		}catch(Exception e){
+		}
+		byte[] imageByteArray = baos.toByteArray();
+		readBuffer.add(buf);
+		int index = 0;
+		for(int i = 0; i < imageByteArray.length ; i++ ){
+			if(!readBuffer.get(index).hasRemaining()){
+				readBuffer.get(index).flip();
+				index++;
+				readBuffer.add(ByteBuffer.allocate(1024));
+			}
+			readBuffer.get(index).put(imageByteArray[i]);
+		}
+		readBuffer.get(index).flip();
+
+
+		ImageIcon ii = bb.bufToImageIcon(readBuffer);
+
+		FilePresentationWindow frame = new FilePresentationWindow();
+		frame.setVisible(true);
+		frame.ImagePresenter(ii);
+	}
+
+}
