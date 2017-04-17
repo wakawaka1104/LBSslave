@@ -1,18 +1,13 @@
 package tcpIp;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-
-import gui.FilePresentationWindow;
 
 public class ByteConverter {
 
@@ -23,15 +18,16 @@ public class ByteConverter {
 
 	public String bufToString(List<ByteBuffer> readBuffer){
 
-		String tmp = "";
 		byte[] byteArray;
 		ByteBuffer buf;
+		StringBuilder sb = new StringBuilder();
 		for(Iterator<ByteBuffer> it = readBuffer.iterator(); it.hasNext() ;){
 			buf = it.next();
 			byteArray = new byte[buf.remaining()];
 			buf.get(byteArray);
-			tmp += new String(byteArray) + "/";
+			sb.append(new String(byteArray));
 		}
+		String tmp = sb.toString();
 		readBuffer.clear();
 		return tmp;
 	}
@@ -58,7 +54,7 @@ public class ByteConverter {
 	//デバグ用main
 	public static void main(String[] args) {
 		//bufToString
-		/*
+
 		ByteConverter bb = new ByteConverter().getInstance();
 		List<ByteBuffer> readBuffer = new ArrayList<ByteBuffer>();
 		ByteBuffer buf = ByteBuffer.allocate(1024);
@@ -80,10 +76,10 @@ public class ByteConverter {
 		readBuffer.get(1).flip();
 
 		System.out.println(bb.bufToString(readBuffer));
-		*/
+
 
 		//bufToImageIcon
-
+/*
 		ByteConverter bb = new ByteConverter().getInstance();
 		List<ByteBuffer> readBuffer = new ArrayList<ByteBuffer>();
 		ByteBuffer buf = ByteBuffer.allocate(1024);
@@ -113,6 +109,7 @@ public class ByteConverter {
 		FilePresentationWindow frame = new FilePresentationWindow();
 		frame.setVisible(true);
 		frame.ImagePresenter(ii);
+		*/
 	}
 
 }
