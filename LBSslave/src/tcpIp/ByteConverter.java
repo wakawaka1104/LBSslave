@@ -16,7 +16,7 @@ public class ByteConverter {
 
 	private ByteConverter(){}
 
-	public String bufToString(List<ByteBuffer> readBuffer){
+	public static String bufToString(List<ByteBuffer> readBuffer){
 
 		byte[] byteArray;
 		ByteBuffer buf;
@@ -32,16 +32,16 @@ public class ByteConverter {
 		return tmp;
 	}
 
-	public ImageIcon bufToImageIcon(List<ByteBuffer> readBuffer){
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	public static ImageIcon bufToImageIcon(List<ByteBuffer> readBuffer){
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		for(Iterator<ByteBuffer> it = readBuffer.iterator(); it.hasNext() ;){
 			try {
-				bos.write(it.next().array());
+				baos.write(it.next().array());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		byte[] imageByteArray = bos.toByteArray();
+		byte[] imageByteArray = baos.toByteArray();
 		readBuffer.clear();
 
 		return new ImageIcon(imageByteArray);
@@ -55,7 +55,6 @@ public class ByteConverter {
 	public static void main(String[] args) {
 		//bufToString
 
-		ByteConverter bb = new ByteConverter().getInstance();
 		List<ByteBuffer> readBuffer = new ArrayList<ByteBuffer>();
 		ByteBuffer buf = ByteBuffer.allocate(1024);
 		ByteBuffer buf2 = ByteBuffer.allocate(1024);
@@ -75,7 +74,7 @@ public class ByteConverter {
 		readBuffer.get(0).flip();
 		readBuffer.get(1).flip();
 
-		System.out.println(bb.bufToString(readBuffer));
+		System.out.println(bufToString(readBuffer));
 
 
 		//bufToImageIcon

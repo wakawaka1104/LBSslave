@@ -1,6 +1,11 @@
 package tcpIp;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -10,13 +15,18 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
+import asset.Classifier;
+import asset.IndoorLocation;
+import asset.Property;
+import asset._Property;
+
 public class SlaveClient implements Runnable{
 
 	// member
 	private static final int BUF_SIZE = 1024;
 	private static final int WAIT_TIME = 500;
 	private Selector selector;
-	private String sendData;
+	private byte[] sendData;
 	private boolean sendFlag = false;
 
 	private SocketChannel channel = null;
@@ -62,8 +72,8 @@ public class SlaveClient implements Runnable{
 		}
 	}
 
-	synchronized public void asyncSend(String data){
-		sendData = data;
+	synchronized public void asyncSend(byte[] data){
+		this.sendData = data;
 		sendFlag = true;
 	}
 
@@ -79,7 +89,7 @@ public class SlaveClient implements Runnable{
 					it.remove();
 
 					IOHandler handler = (IOHandler)key.attachment();
-					handler.stringToBuf(sendData);
+					handler.byteToBuf(sendData);
 					handler.handle(key);
 					return;
 				}
@@ -90,6 +100,60 @@ public class SlaveClient implements Runnable{
 		}finally {
 			sendFlag = false;
 		}
+	}
+
+	//static function
+
+	public static byte[] serialize(Classifier cl){
+		try {
+			byte[] tmp;
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutput oo = new ObjectOutputStream(baos);
+			oo.writeObject(cl);
+			tmp = baos.toByteArray();
+			return tmp;
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	public static byte[] addHeader(byte[] data){
+		byte[] tmp = new byte[data.length + 1];
+		tmp[0] = (byte)0;
+		for(int i = 0; i < data.length; i++){
+			tmp[i+1] = data[i];
+		}
+		return tmp;
+	}
+
+
+	//デバグ用main
+	public static void main(String[] args){
+		_Property prop = _Property.getInstance();
+		prop.setName("name");
+		prop.setLocation(new IndoorLocation(1, 1, 1));
+
+		Property p = new Property();
+		byte[] tmp = serialize(p);
+
+		try {
+			ByteArrayInputStream bais = new ByteArrayInputStream(tmp);
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			Object tmpObject = ois.readObject();
+			bais.close();
+			ois.close();
+
+			System.out.println(tmpObject.toString());
+		} catch (IOException | ClassNotFoundException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+
+
+
 	}
 
 }

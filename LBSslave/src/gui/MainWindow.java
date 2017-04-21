@@ -2,6 +2,8 @@ package gui;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -14,6 +16,8 @@ import javax.swing.border.EmptyBorder;
 
 import asset.IndoorLocation;
 import asset.Property;
+import asset._Property;
+import tcpIp.SlaveClient;
 
 public class MainWindow extends JFrame {
 
@@ -32,8 +36,8 @@ public class MainWindow extends JFrame {
 				try {
 					MainWindow frame = new MainWindow();
 					frame.setVisible(true);
-					Property.getInstance().setLocation(new IndoorLocation(Double.parseDouble(JOptionPane.showInputDialog("x")), Double.parseDouble(JOptionPane.showInputDialog("y")), Double.parseDouble(JOptionPane.showInputDialog("z"))));
-					Property.getInstance().setName(JOptionPane.showInputDialog("name"));
+					_Property.getInstance().setLocation(new IndoorLocation(Double.parseDouble(JOptionPane.showInputDialog("x")), Double.parseDouble(JOptionPane.showInputDialog("y")), Double.parseDouble(JOptionPane.showInputDialog("z"))));
+					_Property.getInstance().setName(JOptionPane.showInputDialog("name"));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -67,9 +71,9 @@ public class MainWindow extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 
-			System.out.println(Property.getInstance().getLocation().toString());
+//			System.out.println(Property.getInstance().getLocation().toString());
 
-			/*
+
 			InetAddress addr;
 			try {
 				addr = InetAddress.getLocalHost();
@@ -77,13 +81,20 @@ public class MainWindow extends JFrame {
 				Thread clientThread = new Thread(sc);
 				clientThread.start();
 
-				sc.asyncSend("test message");
+				_Property prop = _Property.getInstance();
+				prop.setName("name");
+				prop.setLocation(new IndoorLocation(1, 1, 1));
+
+				Property p = new Property(prop);
+				byte[] tmp = SlaveClient.serialize(p);
+				sc.asyncSend(SlaveClient.addHeader(tmp));
+
 
 			} catch (UnknownHostException e1) {
 				System.err.println("aaa");
 				e1.printStackTrace();
 			}
-			 */
+
 		}
 	}
 }

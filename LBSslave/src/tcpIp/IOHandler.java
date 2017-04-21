@@ -81,6 +81,12 @@ public class IOHandler implements Handler{
 
 	}
 
+	public void byteToBuf(byte[] data){
+		writeBuffer.clear();
+		writeBuffer.put(data);
+		writeBuffer.flip();
+	}
+
 	public ByteBuffer getWriteBuffer() {
 		return writeBuffer;
 	}

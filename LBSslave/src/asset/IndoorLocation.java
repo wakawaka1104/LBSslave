@@ -1,7 +1,11 @@
 package asset;
 
+import java.io.Serializable;
+
 //物理位置を示すクラス
-public class IndoorLocation {
+public class IndoorLocation implements Serializable,Classifier{
+
+	private static final long serialVersionUID = 2L;
 
 	//member
 	private double x;
@@ -37,7 +41,7 @@ public class IndoorLocation {
 	}
 
 	public String toString(){
-		return "x:[" + x + "],y:[" + y + "],z:[" + z + "]";
+		return "x:[" + x + "],y:[" + y + "],z:[" + z + "]\n";
 	}
 
 }
