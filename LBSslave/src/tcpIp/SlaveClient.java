@@ -12,19 +12,19 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
 
 import asset.Classifier;
 import asset.IndoorLocation;
 import asset.Property;
 import asset._Property;
 
-public class SlaveClient implements Runnable{
+public class SlaveClient implements Runnable {
 
 	// member
 	private static final int BUF_SIZE = 1024;
-	private static final int WAIT_TIME = 500;
 	private Selector selector;
 	private byte[] sendData;
 	private boolean sendFlag = false;
@@ -37,33 +37,110 @@ public class SlaveClient implements Runnable{
 		try {
 			System.out.println("SlaveClient:channel open");
 			channel = SocketChannel.open(new InetSocketAddress(addr, port));
-			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString() + ":" + port + "]にバインドしました。");
+			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString() + ":" + port
+					+ "]にバインドしました。");
 		} catch (IOException e) {
 			System.err.println("SlaveClient:constructor()[error]");
 			e.printStackTrace();
 		}
 	}
 
-	public void run(){
+	public void run() {
 		open();
-		while(true){
-			if(sendFlag){
-				_asyncSend();
-			}else{
-				try {
-					Thread.sleep(WAIT_TIME);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+		try {
+			channel.register(selector, SelectionKey.OP_WRITE, new IOHandler());
+			while (selector.select() > 0) {
+				for (Iterator<SelectionKey> it = selector.selectedKeys().iterator(); it.hasNext();) {
+					SelectionKey key = (SelectionKey) it.next();
+					it.remove();
+					if (sendFlag && key.isWritable()) {
+						_asyncSend(key);
+						key.interestOps(SelectionKey.OP_READ);
+					}
+					if (key.isReadable()) {
+						doRead((SocketChannel) key.channel());
+						key.interestOps(SelectionKey.OP_WRITE);
+					}
 				}
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	public void open(){
-		//channel open
+	private void doRead(SocketChannel channel2) {
+		ArrayList<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
+		bufferList.add(ByteBuffer.allocate(BUF_SIZE));
+		int bufSize = 0;
+
+		Charset charset = Charset.forName("UTF-8");
+		String remoteAddress = channel.socket().getRemoteSocketAddress().toString();
+		try {
+			for (int index = 0;; index++) {
+				int readSize = channel.read(bufferList.get(index));
+				if (readSize < 0) {
+					return;
+				}
+				bufferList.get(index).flip();
+				/////////////////////////debug用/////////////////////////////////
+				System.out
+						.println("[server]:" + remoteAddress + ":" + charset.decode(bufferList.get(index)).toString());
+				bufferList.get(index).flip();
+				//////////////////////////////////////////////////////////////////
+
+				if (readSize == BUF_SIZE) {
+					// BUF_SIZEを超えるデータが現れたとき、格納するByteBufferを追加
+					bufferList.add(ByteBuffer.allocate(BUF_SIZE));
+					continue;
+				}
+				break;
+			}
+
+			for (Iterator<ByteBuffer> it = bufferList.iterator(); it.hasNext();) {
+				bufSize += it.next().limit();
+			}
+			System.out.println("bufSize:" + bufSize + "\n");
+
+			ByteBuffer contents = ByteBuffer.allocate(bufSize);
+			for(Iterator<ByteBuffer> it = bufferList.iterator(); it.hasNext();){
+				contents.put(it.next());
+			}
+			contents.flip();
+
+			/////////////////////////debug用//////////////////////
+			System.out
+			.println("[server]:" + remoteAddress + ":" + charset.decode(contents).toString());
+			contents.flip();
+			/////////////////////////////////////////////////////
+
+			//Propertyが来ると仮定
+			Property prop = (Property)deserialize(contents);
+			SlaveClient sc2 = new SlaveClient(prop.getIp(), prop.getPort());
+			Thread th = new Thread(sc2);
+			th.start();
+
+		} catch (
+
+		IOException e) {
+			System.err.println("TestServer:doRead()[error]");
+			e.printStackTrace();
+		} finally {
+			System.out.println("[server]:" + remoteAddress + ":[disconnect]");
+			try {
+				channel.close();
+			} catch (IOException e) {
+				System.err.println("TestServer:doRead():close()[error]");
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public void open() {
+		// channel open
 		try {
 			channel.socket().setReuseAddress(true);
-			//non blocking mode
+			// non blocking mode
 			channel.configureBlocking(false);
 			selector = Selector.open();
 		} catch (IOException e) {
@@ -72,39 +149,30 @@ public class SlaveClient implements Runnable{
 		}
 	}
 
-	synchronized public void asyncSend(byte[] data){
+	synchronized public void asyncSend(byte[] data) {
 		this.sendData = data;
 		sendFlag = true;
 	}
 
-	//private function
-	synchronized private void _asyncSend(){
+	// private function
+	synchronized private void _asyncSend(SelectionKey key) {
+
 		try {
-			channel.register(selector,SelectionKey.OP_WRITE ,new IOHandler());
-			while(selector.select() > 0){
-
-				Set<SelectionKey> keys = selector.selectedKeys();
-				for(Iterator<SelectionKey> it = keys.iterator(); it.hasNext(); ){
-					SelectionKey key = it.next();
-					it.remove();
-
-					IOHandler handler = (IOHandler)key.attachment();
-					handler.byteToBuf(sendData);
-					handler.handle(key);
-					return;
-				}
-			}
+			IOHandler handler = (IOHandler) key.attachment();
+			handler.byteToBuf(sendData);
+			handler.handle(key);
+			return;
 		} catch (IOException e) {
-			System.err.println("SlaveClient;asyncSend()[error]");
-			e.printStackTrace();
-		}finally {
+			System.err.println(e);
+		} finally {
 			sendFlag = false;
 		}
+
 	}
 
-	//static function
+	// static function
 
-	public static byte[] serialize(Classifier cl){
+	public static byte[] serialize(Classifier cl) {
 		try {
 			byte[] tmp;
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -120,18 +188,35 @@ public class SlaveClient implements Runnable{
 
 	}
 
-	public static byte[] addHeader(byte[] data){
+	public Object deserialize(ByteBuffer buf){
+		try {
+			byte[] bufArray;
+			bufArray = buf.array();
+			ByteArrayInputStream bais = new ByteArrayInputStream(bufArray);
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			Object tmp = ois.readObject();
+			bais.close();
+			ois.close();
+			return tmp;
+		} catch (IOException | ClassNotFoundException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	public static byte[] addHeader(byte[] data) {
 		byte[] tmp = new byte[data.length + 1];
-		tmp[0] = (byte)0;
-		for(int i = 0; i < data.length; i++){
-			tmp[i+1] = data[i];
+		tmp[0] = (byte) 0;
+		for (int i = 0; i < data.length; i++) {
+			tmp[i + 1] = data[i];
 		}
 		return tmp;
 	}
 
-
-	//デバグ用main
-	public static void main(String[] args){
+	// デバグ用main
+	public static void main(String[] args) {
 		_Property prop = _Property.getInstance();
 		prop.setName("name");
 		prop.setLocation(new IndoorLocation(1, 1, 1));
@@ -151,8 +236,6 @@ public class SlaveClient implements Runnable{
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
-
-
 
 	}
 

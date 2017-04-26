@@ -13,6 +13,22 @@ public class Property implements Classifier,Serializable{
 	private int port;
 	private String name;
 
+	public IndoorLocation getLo() {
+		return lo;
+	}
+
+	public InetAddress getIp() {
+		return ip;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	//constructor
 	public Property(){
 

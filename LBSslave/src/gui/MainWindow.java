@@ -86,7 +86,7 @@ public class MainWindow extends JFrame {
 				prop.setLocation(new IndoorLocation(1, 1, 1));
 
 				Property p = new Property(prop);
-				byte[] tmp = SlaveClient.serialize(p);
+				byte[] tmp = SlaveClient.serialize(prop.getLocation());
 				sc.asyncSend(SlaveClient.addHeader(tmp));
 
 
