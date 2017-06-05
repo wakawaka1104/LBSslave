@@ -19,6 +19,9 @@ public class IndoorLocation implements Serializable,Classifier{
 		this.z = z;
 	}
 
+	public void readFunc(byte header){
+		
+	}
 
 
 	public double getX() {

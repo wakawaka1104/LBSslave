@@ -3,6 +3,8 @@ package asset;
 import java.io.Serializable;
 import java.net.InetAddress;
 
+import tcpIp.SlaveClient;
+
 public class Property implements Classifier,Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -12,6 +14,28 @@ public class Property implements Classifier,Serializable{
 	private InetAddress ip;
 	private int port;
 	private String name;
+	
+	public void readFunc(byte header){
+		
+		switch(header){
+		
+		case 0x00:
+			//header == 0x00
+			//提供されたPropertyを持つ端末とtcpip通信を確立
+			try{
+				SlaveClient sc = new SlaveClient(ip, port);
+				Thread clientThread = new Thread(sc);
+				clientThread.start();
+				//sc.asyncSend("test:readFunc".getBytes());
+			}catch (Exception e) {
+
+			}
+			
+		default:
+		
+		}
+
+	}
 
 	public IndoorLocation getLo() {
 		return lo;

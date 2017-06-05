@@ -48,7 +48,7 @@ public class SlaveClient implements Runnable {
 	public void run() {
 		open();
 		try {
-			channel.register(selector, SelectionKey.OP_WRITE, new IOHandler());
+			channel.register(selector, SelectionKey.OP_WRITE|SelectionKey.OP_READ, new IOHandler());
 			while (selector.select() > 0) {
 				for (Iterator<SelectionKey> it = selector.selectedKeys().iterator(); it.hasNext();) {
 					SelectionKey key = (SelectionKey) it.next();
@@ -71,6 +71,7 @@ public class SlaveClient implements Runnable {
 	private void doRead(SocketChannel channel2) {
 		ArrayList<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
 		bufferList.add(ByteBuffer.allocate(BUF_SIZE));
+		byte header = 0x00;
 		int bufSize = 0;
 
 		Charset charset = Charset.forName("UTF-8");
@@ -82,12 +83,22 @@ public class SlaveClient implements Runnable {
 					return;
 				}
 				bufferList.get(index).flip();
+				// パケット先頭1バイトはClassifier
+				if (index == 0) {
+					header = bufferList.get(index).get();
+				}
+				
+				
 				/////////////////////////debug用/////////////////////////////////
 				System.out
 						.println("[server]:" + remoteAddress + ":" + charset.decode(bufferList.get(index)).toString());
 				bufferList.get(index).flip();
+				if(index==0){
+					bufferList.get(index).position(1);
+				}
 				//////////////////////////////////////////////////////////////////
 
+				
 				if (readSize == BUF_SIZE) {
 					// BUF_SIZEを超えるデータが現れたとき、格納するByteBufferを追加
 					bufferList.add(ByteBuffer.allocate(BUF_SIZE));
@@ -99,6 +110,8 @@ public class SlaveClient implements Runnable {
 			for (Iterator<ByteBuffer> it = bufferList.iterator(); it.hasNext();) {
 				bufSize += it.next().limit();
 			}
+			// -1はheader分のバイトを加味しない、という意味
+			bufSize -= 1;
 			System.out.println("bufSize:" + bufSize + "\n");
 
 			ByteBuffer contents = ByteBuffer.allocate(bufSize);
@@ -113,15 +126,10 @@ public class SlaveClient implements Runnable {
 			contents.flip();
 			/////////////////////////////////////////////////////
 
-			//Propertyが来ると仮定
-			Property prop = (Property)deserialize(contents);
-			SlaveClient sc2 = new SlaveClient(prop.getIp(), prop.getPort());
-			Thread th = new Thread(sc2);
-			th.start();
+			Classifier cl = (Classifier) deserialize(contents);
+			cl.readFunc(header);
 
-		} catch (
-
-		IOException e) {
+		} catch (IOException e) {
 			System.err.println("TestServer:doRead()[error]");
 			e.printStackTrace();
 		} finally {

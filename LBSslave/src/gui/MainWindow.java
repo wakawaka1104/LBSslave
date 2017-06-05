@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import asset.IndoorLocation;
-import asset.Property;
 import asset._Property;
 import tcpIp.SlaveClient;
 
@@ -80,7 +79,7 @@ public class MainWindow extends JFrame {
 				SlaveClient sc = new SlaveClient(addr, 11111);
 				Thread clientThread = new Thread(sc);
 				clientThread.start();
-
+/*
 				_Property prop = _Property.getInstance();
 				prop.setName("name");
 				prop.setLocation(new IndoorLocation(1, 1, 1));
@@ -88,7 +87,7 @@ public class MainWindow extends JFrame {
 				Property p = new Property(prop);
 				byte[] tmp = SlaveClient.serialize(prop.getLocation());
 				sc.asyncSend(SlaveClient.addHeader(tmp));
-
+*/
 
 			} catch (UnknownHostException e1) {
 				System.err.println("aaa");

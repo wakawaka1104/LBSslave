@@ -41,8 +41,9 @@ public class FilePresentationWindow extends JFrame {
 		setContentPane(contentPane);
 
 
-		ImageIcon ii = new ImageIcon("./img/poputepic.png");
+		ImageIcon ii = new ImageIcon(".\\img\\poputepic.png");
 		label.setIcon(ii);
+
 		contentPane.add(label, BorderLayout.CENTER);
 	}
 

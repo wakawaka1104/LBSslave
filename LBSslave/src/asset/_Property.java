@@ -26,6 +26,9 @@ public class _Property implements Serializable,Classifier{
 		}
 	}
 
+	public void readFunc(byte header){
+		
+	}
 
 
 	//getter/setter
