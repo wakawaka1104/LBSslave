@@ -76,6 +76,7 @@ public class SlaveClient extends SocketComm implements Runnable {
 
 		Charset charset = Charset.forName("UTF-8");
 		String remoteAddress = channel.socket().getRemoteSocketAddress().toString();
+		SChannel = channel;
 		try {
 			for (int index = 0;; index++) {
 				int readSize = channel.read(bufferList.get(index));

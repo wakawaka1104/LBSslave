@@ -27,7 +27,7 @@ public class Property implements Classifier,Serializable{
 				SlaveClient _sc = new SlaveClient(ip, port);
 				Thread clientThread = new Thread(_sc);
 				clientThread.start();
-				//sc.asyncSend("test:readFunc".getBytes());
+				sc.asyncSend(SlaveClient.addHeader(SlaveClient.serialize(new Message("Property Received"))));
 			}catch (Exception e) {
 
 			}

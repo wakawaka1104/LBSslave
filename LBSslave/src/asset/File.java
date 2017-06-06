@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.swing.ImageIcon;
 
 import gui.FilePresentationWindow;
+import tcpIp.SlaveClient;
 import tcpIp.SocketComm;
 
 public class File implements Serializable, Classifier {
@@ -21,7 +22,7 @@ public class File implements Serializable, Classifier {
 			FilePresentationWindow frame = new FilePresentationWindow();
 			frame.ImagePresenter(ii);
 			frame.setVisible(true);
-
+			sc.asyncSend(SlaveClient.addHeader(SlaveClient.serialize(new Message("image Received"))));
 		default:
 		}
 
