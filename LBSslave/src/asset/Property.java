@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 
 import tcpIp.SlaveClient;
+import tcpIp.SocketComm;
 
 public class Property implements Classifier,Serializable{
 
@@ -14,25 +15,25 @@ public class Property implements Classifier,Serializable{
 	private InetAddress ip;
 	private int port;
 	private String name;
-	
-	public void readFunc(byte header){
-		
+
+	public void readFunc(byte header, SocketComm sc){
+
 		switch(header){
-		
+
 		case 0x00:
 			//header == 0x00
 			//提供されたPropertyを持つ端末とtcpip通信を確立
 			try{
-				SlaveClient sc = new SlaveClient(ip, port);
-				Thread clientThread = new Thread(sc);
+				SlaveClient _sc = new SlaveClient(ip, port);
+				Thread clientThread = new Thread(_sc);
 				clientThread.start();
 				//sc.asyncSend("test:readFunc".getBytes());
 			}catch (Exception e) {
 
 			}
-			
+
 		default:
-		
+
 		}
 
 	}

@@ -5,16 +5,17 @@ import java.io.Serializable;
 import javax.swing.ImageIcon;
 
 import gui.FilePresentationWindow;
+import tcpIp.SocketComm;
 
 public class File implements Serializable, Classifier {
-	
+
 	private ImageIcon ii;
 	private static final long serialVersionUID = 3L;
 
 	@Override
-	public void readFunc(byte header) {
+	public void readFunc(byte header, SocketComm sc) {
 		switch(header){
-		
+
 		case 0x00:
 			//imageicon
 			FilePresentationWindow frame = new FilePresentationWindow();

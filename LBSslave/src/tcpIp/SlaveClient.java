@@ -21,7 +21,7 @@ import asset.IndoorLocation;
 import asset.Property;
 import asset._Property;
 
-public class SlaveClient implements Runnable {
+public class SlaveClient extends SocketComm implements Runnable {
 
 	// member
 	private static final int BUF_SIZE = 1024;
@@ -87,8 +87,8 @@ public class SlaveClient implements Runnable {
 				if (index == 0) {
 					header = bufferList.get(index).get();
 				}
-				
-				
+
+
 				/////////////////////////debug用/////////////////////////////////
 				System.out
 						.println("[server]:" + remoteAddress + ":" + charset.decode(bufferList.get(index)).toString());
@@ -98,7 +98,7 @@ public class SlaveClient implements Runnable {
 				}
 				//////////////////////////////////////////////////////////////////
 
-				
+
 				if (readSize == BUF_SIZE) {
 					// BUF_SIZEを超えるデータが現れたとき、格納するByteBufferを追加
 					bufferList.add(ByteBuffer.allocate(BUF_SIZE));
@@ -127,7 +127,7 @@ public class SlaveClient implements Runnable {
 			/////////////////////////////////////////////////////
 
 			Classifier cl = (Classifier) deserialize(contents);
-			cl.readFunc(header);
+			cl.readFunc(header,this);
 
 		} catch (IOException e) {
 			System.err.println("TestServer:doRead()[error]");

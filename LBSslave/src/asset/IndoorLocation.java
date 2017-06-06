@@ -2,6 +2,8 @@ package asset;
 
 import java.io.Serializable;
 
+import tcpIp.SocketComm;
+
 //物理位置を示すクラス
 public class IndoorLocation implements Serializable,Classifier{
 
@@ -19,8 +21,8 @@ public class IndoorLocation implements Serializable,Classifier{
 		this.z = z;
 	}
 
-	public void readFunc(byte header){
-		
+	public void readFunc(byte header, SocketComm sc){
+
 	}
 
 

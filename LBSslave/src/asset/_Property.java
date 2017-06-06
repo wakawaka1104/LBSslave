@@ -3,6 +3,8 @@ package asset;
 import java.io.Serializable;
 import java.net.InetAddress;
 
+import tcpIp.SocketComm;
+
 public class _Property implements Serializable,Classifier{
 
 	//magic number
@@ -26,8 +28,8 @@ public class _Property implements Serializable,Classifier{
 		}
 	}
 
-	public void readFunc(byte header){
-		
+	public void readFunc(byte header, SocketComm sc){
+
 	}
 
 
