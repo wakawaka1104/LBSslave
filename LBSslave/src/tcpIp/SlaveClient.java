@@ -44,6 +44,18 @@ public class SlaveClient extends SocketComm implements Runnable {
 			e.printStackTrace();
 		}
 	}
+	// constructor
+	public SlaveClient(String addr, int port) {
+		try {
+			System.out.println("SlaveClient:channel open");
+			channel = SocketChannel.open(new InetSocketAddress(addr, port));
+			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString() + ":" + port
+					+ "]にバインドしました。");
+		} catch (IOException e) {
+			System.err.println("SlaveClient:constructor()[error]");
+			e.printStackTrace();
+		}
+	}
 
 	public void run() {
 		open();

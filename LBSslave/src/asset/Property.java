@@ -38,7 +38,7 @@ public class Property implements Classifier,Serializable{
 
 	}
 
-	public IndoorLocation getLo() {
+	public IndoorLocation getLocation() {
 		return lo;
 	}
 
