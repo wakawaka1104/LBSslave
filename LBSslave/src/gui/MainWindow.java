@@ -16,7 +16,7 @@ import javax.swing.border.EmptyBorder;
 
 import asset.IndoorLocation;
 import asset._Property;
-import tcpIp.SlaveClient;
+import tcpIp.SocketClient;
 
 public class MainWindow extends JFrame {
 
@@ -76,7 +76,7 @@ public class MainWindow extends JFrame {
 			InetAddress addr;
 			try {
 				addr = InetAddress.getLocalHost();
-				SlaveClient sc = new SlaveClient(addr, 11111);
+				SocketClient sc = new SocketClient(addr, 11111);
 				Thread clientThread = new Thread(sc);
 				clientThread.start();
 /*

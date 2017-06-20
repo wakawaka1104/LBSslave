@@ -3,7 +3,7 @@ package asset;
 import java.io.Serializable;
 import java.net.InetAddress;
 
-import tcpIp.SlaveClient;
+import tcpIp.SocketClient;
 import tcpIp.SocketComm;
 
 public class Property implements Classifier,Serializable{
@@ -24,10 +24,10 @@ public class Property implements Classifier,Serializable{
 			//header == 0x00
 			//提供されたPropertyを持つ端末とtcpip通信を確立
 			try{
-				SlaveClient _sc = new SlaveClient(ip, port);
+				SocketClient _sc = new SocketClient(ip, port);
 				Thread clientThread = new Thread(_sc);
 				clientThread.start();
-				sc.asyncSend(SlaveClient.addHeader(SlaveClient.serialize(new Message("Property Received"))));
+				sc.asyncSend(new Message("Property Received"),(byte)0);
 			}catch (Exception e) {
 
 			}
