@@ -25,7 +25,7 @@ public class SocketClient extends SocketComm implements Runnable{
 
 	//************constructor
 	public SocketClient(InetAddress addr, int port) {
-		try {
+		try { 
 			System.out.println("SocketClient:channel open");
 			channel = SocketChannel.open(new InetSocketAddress(addr, port));
 			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString() + ":" + port

@@ -21,10 +21,14 @@ public class IndoorLocation implements Serializable,Classifier{
 		this.z = z;
 	}
 
+	//public func
+	public double dist(IndoorLocation a){
+		return Math.sqrt( Math.pow( (x-a.getX()) ,2) + Math.pow( (y-a.getY()) ,2) + Math.pow( (z-a.getZ()) ,2) );
+	}
+
 	public void readFunc(byte header, SocketComm sc){
 
 	}
-
 
 	public double getX() {
 		return x;

@@ -15,10 +15,12 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import asset.IndoorLocation;
-import asset._Property;
+import asset.Property;
 import tcpIp.SocketClient;
 
 public class MainWindow extends JFrame {
+
+	private static Property myProp = new Property();
 
 	private JPanel contentPane;
 	private JLabel stateLabel = new JLabel("none");
@@ -35,8 +37,8 @@ public class MainWindow extends JFrame {
 				try {
 					MainWindow frame = new MainWindow();
 					frame.setVisible(true);
-					_Property.getInstance().setLocation(new IndoorLocation(Double.parseDouble(JOptionPane.showInputDialog("x")), Double.parseDouble(JOptionPane.showInputDialog("y")), Double.parseDouble(JOptionPane.showInputDialog("z"))));
-					_Property.getInstance().setName(JOptionPane.showInputDialog("name"));
+					myProp.setLocation(new IndoorLocation(Double.parseDouble(JOptionPane.showInputDialog("x")), Double.parseDouble(JOptionPane.showInputDialog("y")), Double.parseDouble(JOptionPane.showInputDialog("z"))));
+					myProp.setName(JOptionPane.showInputDialog("name"));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

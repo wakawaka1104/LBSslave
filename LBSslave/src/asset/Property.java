@@ -11,15 +11,13 @@ public class Property implements Classifier,Serializable{
 	private static final long serialVersionUID = 1L;
 
 	//member
-	private IndoorLocation lo;
+	private IndoorLocation location;
 	private InetAddress ip;
 	private int port;
 	private String name;
 
 	public void readFunc(byte header, SocketComm sc){
-
 		switch(header){
-
 		case 0x00:
 			//header == 0x00
 			//提供されたPropertyを持つ端末とtcpip通信を確立
@@ -29,29 +27,11 @@ public class Property implements Classifier,Serializable{
 				clientThread.start();
 				sc.asyncSend(new Message("Property Received"),(byte)0);
 			}catch (Exception e) {
-
+				System.err.println("Property:readFunc()[error]");
+				return;
 			}
-
 		default:
-
 		}
-
-	}
-
-	public IndoorLocation getLocation() {
-		return lo;
-	}
-
-	public InetAddress getIp() {
-		return ip;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	//constructor
@@ -60,21 +40,47 @@ public class Property implements Classifier,Serializable{
 	}
 
 	public Property(IndoorLocation lo,InetAddress ip,int port,String name){
-		this.lo = lo;
+		this.location = lo;
 		this.ip = ip;
 		this.port = port;
 		this.name = name;
 	}
 
-	public Property(_Property prop){
-		this.lo = prop.getLocation();
+	public Property(Property prop){
+		this.location = prop.getLocation();
 		this.ip = prop.getIp();
 		this.port = prop.getPort();
 		this.name = prop.getName();
 	}
 
+	//getter/setter
+	public IndoorLocation getLocation() {
+		return location;
+	}
+	public InetAddress getIp() {
+		return ip;
+	}
+	public int getPort() {
+		return port;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setLocation(IndoorLocation location) {
+		this.location = location;
+	}
+	public void setIp(InetAddress ip) {
+		this.ip = ip;
+	}
+	public void setPort(int port) {
+		this.port = port;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public String toString(){
-		return "Location:"+lo.toString()+"\n"+"ip:"+ip.toString()+"\n"+"port:"+port+"\n"+"name:"+name+"\n" ;
+		return "Location:"+location.toString()+"\n"+"ip:"+ip.toString()+"\n"+"port:"+port+"\n"+"name:"+name+"\n" ;
 	}
 
 }
