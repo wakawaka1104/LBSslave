@@ -36,7 +36,7 @@ public class Converter {
 
 	public static Object deserialize(byte[] contents){
 		try {
-			ByteArrayInputStream bais = new ByteArrayInputStream(contents);
+			ByteArrayInputStream bais = new ByteArrayInputStream(contents,1,contents.length-1);
 			ObjectInputStream ois = new ObjectInputStream(bais);
 			Object tmp = ois.readObject();
 			bais.close();

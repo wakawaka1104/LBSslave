@@ -17,6 +17,7 @@ public class SocketServer extends SocketComm implements Runnable{
 	//**********private member
 	private final static int BUF_SIZE = 1024;
 
+//	private InetAddress addr;
 	private int port;
 	private Selector selector;
 	private byte[] sendData;
@@ -27,29 +28,8 @@ public class SocketServer extends SocketComm implements Runnable{
 
 	//************constructor
 	public SocketServer(InetAddress addr, int port) {
-		try {
-			this.port = port;
-			System.out.println("SocketClient:channel open");
-			channel = SocketChannel.open(new InetSocketAddress(addr, port));
-			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString() + ":" + port
-					+ "]にバインドしました。");
-		} catch (Exception e) {
-			System.err.println("SlaveClient:constructor()[error]");
-			e.printStackTrace();
-		}
-	}
-
-	public SocketServer(String addr, int port) {
-		try {
-			this.port = port;
-			System.out.println("SocketClient:channel open");
-			channel = SocketChannel.open(new InetSocketAddress(addr, port));
-			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString() + ":" + port
-					+ "]にバインドしました。");
-		} catch (Exception e) {
-			System.err.println("SlaveClient:constructor()[error]");
-			e.printStackTrace();
-		}
+//		this.addr = addr;
+		this.port = port;
 	}
 
 	//************************
@@ -80,11 +60,10 @@ public class SocketServer extends SocketComm implements Runnable{
 					it.remove();
 					if (key.isAcceptable()) {
 						doAccept((ServerSocketChannel) key.channel());
-						key.interestOps(SelectionKey.OP_ACCEPT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-					}
+					}else
 					if (sendFlag && key.isWritable()) {
-						doSend(key);
-					}
+						doSend((SocketChannel)key.channel());
+					}else
 					if (key.isReadable()) {
 						doRead((SocketChannel) key.channel());
 					}
@@ -98,13 +77,17 @@ public class SocketServer extends SocketComm implements Runnable{
 	}
 
 	public void asyncSend(byte[] data){
-		sendData = data;
-		sendFlag = true;
+		while(sendFlag == false){
+			sendData = data;
+			sendFlag = true;
+		}
 	}
 
 	public void asyncSend(Classifier ob, byte header){
-		sendData = Converter.serialize(ob,header);
-		sendFlag = true;
+		while(sendFlag == false){
+			sendData = Converter.serialize(ob,header);
+			sendFlag = true;
+		}
 	}
 
 	// private function
@@ -114,13 +97,14 @@ public class SocketServer extends SocketComm implements Runnable{
 			String remoteAddress = channel.socket().getRemoteSocketAddress().toString();
 			System.out.println("[server]:" + remoteAddress + ":[connect]");
 			channel.configureBlocking(false);
+			channel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 		} catch (Exception e) {
 			System.err.println("SocketServer:doAccept()[error]");
 			e.printStackTrace();
 		}
 	}
 
-	synchronized private void doSend(SelectionKey key) {
+	synchronized private void doSend(SocketChannel channel) {
 		try {
 			//byte[]をwriteBufferに書き込み
 			writeBuffer.clear();
@@ -132,15 +116,14 @@ public class SocketServer extends SocketComm implements Runnable{
 			writeBuffer.clear();
 			return;
 		} catch (Exception e) {
-			System.err.println("SocketServer:_asyncSend()[error]");
+			System.err.println("SocketServer:doSend()[error]");
 			e.printStackTrace();
-			return;
 		} finally {
 			sendFlag = false;
 		}
 	}
 
-	private void doRead(SocketChannel _channel) {
+	private void doRead(SocketChannel channel) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			while(true){
@@ -151,13 +134,19 @@ public class SocketServer extends SocketComm implements Runnable{
 			}
 			byte[] contents = baos.toByteArray();
 			byte header = contents[0];
-
 			Classifier cl = (Classifier) Converter.deserialize(contents);
 			cl.readFunc(header,this);
-
 		} catch (Exception e) {
-			System.err.println("SocketServer:doRead()[error]");
+			System.err.println("SocketClient:doRead()[error]");
 			e.printStackTrace();
+		} finally {
+			System.out.println("[client]:" + channel.socket().getRemoteSocketAddress().toString() + ":[disconnect]");
+			try {
+				channel.close();
+			} catch (Exception _e) {
+				System.err.println("SocketServer:doRead():close()[error]");
+				_e.printStackTrace();
+			}
 		}
 	}
 }

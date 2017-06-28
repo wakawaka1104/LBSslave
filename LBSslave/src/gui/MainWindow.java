@@ -17,10 +17,14 @@ import javax.swing.border.EmptyBorder;
 import asset.IndoorLocation;
 import asset.Property;
 import tcpIp.SocketClient;
+import tcpIp.SocketServer;
 
 public class MainWindow extends JFrame {
 
+	private static final int SERVER_PORT = 11111;
+
 	private static Property myProp = new Property();
+	private static int port;
 
 	private JPanel contentPane;
 	private JLabel stateLabel = new JLabel("none");
@@ -39,6 +43,7 @@ public class MainWindow extends JFrame {
 					frame.setVisible(true);
 					myProp.setLocation(new IndoorLocation(Double.parseDouble(JOptionPane.showInputDialog("x")), Double.parseDouble(JOptionPane.showInputDialog("y")), Double.parseDouble(JOptionPane.showInputDialog("z"))));
 					myProp.setName(JOptionPane.showInputDialog("name"));
+					port = (Integer.parseInt(JOptionPane.showInputDialog("port number")));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -78,21 +83,30 @@ public class MainWindow extends JFrame {
 			InetAddress addr;
 			try {
 				addr = InetAddress.getLocalHost();
-				SocketClient sc = new SocketClient(addr, 11111);
+				SocketServer ss = new SocketServer(addr,port);
+				Thread serverThread = new Thread(ss);
+				serverThread.start();
+
+				SocketClient sc = new SocketClient(addr, SERVER_PORT);
 				Thread clientThread = new Thread(sc);
 				clientThread.start();
-/*
-				_Property prop = _Property.getInstance();
-				prop.setName("name");
-				prop.setLocation(new IndoorLocation(1, 1, 1));
 
-				Property p = new Property(prop);
-				byte[] tmp = SlaveClient.serialize(prop.getLocation());
-				sc.asyncSend(SlaveClient.addHeader(tmp));
-*/
+				Property testDevice = new Property(new IndoorLocation(10, 10, 10), InetAddress.getLocalHost(), 22222, "testDevice");
+				sc.asyncSend(testDevice, (byte)0);
+
+				clientThread.join();
+
+				SocketClient sc2 = new SocketClient(addr, SERVER_PORT);
+				clientThread= new Thread(sc2);
+				clientThread.start();
+				sc2.asyncSend(new IndoorLocation(9, 8, 9), (byte)0);
+
 
 			} catch (UnknownHostException e1) {
 				System.err.println("aaa");
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
+				// TODO 自動生成された catch ブロック
 				e1.printStackTrace();
 			}
 
