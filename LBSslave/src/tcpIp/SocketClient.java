@@ -1,7 +1,6 @@
 package tcpIp;
 
 import java.io.ByteArrayOutputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -16,8 +15,10 @@ public class SocketClient extends SocketComm implements Runnable{
 	//**********private member
 	private final static int BUF_SIZE = 1024;
 
-	private InetAddress 
-	
+
+	private String addr;
+	private int port;
+
 	private Selector selector;
 	private SocketChannel channel;
 	private byte[] sendData;
@@ -27,26 +28,10 @@ public class SocketClient extends SocketComm implements Runnable{
 	//**************************
 
 	//************constructor
-	public SocketClient(InetAddress addr, int port) {
-		try {
-			System.out.println("SocketClient:channel open");
-			channel = SocketChannel.open(new InetSocketAddress(addr, port));
-			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString()	+ "]にバインドしました。");
-		} catch (Exception e) {
-			System.err.println("SocketClient:constructor()[error]");
-			e.printStackTrace();
-		}
-	}
 
 	public SocketClient(String addr, int port) {
-		try {
-			System.out.println("SocketClient:channel open");
-			channel = SocketChannel.open(new InetSocketAddress(addr, port));			
-			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString()	+ "]にバインドしました。");
-		} catch (Exception e) {
-			System.err.println("SocketClient:constructor()[error]");
-			e.printStackTrace();
-		}
+		this.addr = addr;
+		this.port = port;
 	}
 
 	//************************
@@ -57,6 +42,9 @@ public class SocketClient extends SocketComm implements Runnable{
 	public void run() {
 		//channel open処理
 		try {
+			System.out.println("SocketClient:channel open");
+			channel = SocketChannel.open(new InetSocketAddress(addr, port));
+			System.out.println("[client]:" + "[" + channel.socket().getRemoteSocketAddress().toString()	+ "]にバインドしました。");
 			channel.socket().setReuseAddress(true);
 			// non blocking mode
 			channel.configureBlocking(false);
@@ -139,7 +127,6 @@ public class SocketClient extends SocketComm implements Runnable{
 		} catch (Exception e) {
 			System.err.println("SocketClient:doRead()[error]");
 			e.printStackTrace();
-		}finally {
 			try {
 				channel.close();
 			} catch (Exception _e) {

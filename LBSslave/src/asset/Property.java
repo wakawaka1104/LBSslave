@@ -1,7 +1,6 @@
 package asset;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 
 import tcpIp.SocketClient;
 import tcpIp.SocketComm;
@@ -12,7 +11,7 @@ public class Property implements Classifier,Serializable{
 
 	//member
 	private IndoorLocation location;
-	private InetAddress ip;
+	private String ip;
 	private int port;
 	private String name;
 
@@ -39,7 +38,7 @@ public class Property implements Classifier,Serializable{
 
 	}
 
-	public Property(IndoorLocation lo,InetAddress ip,int port,String name){
+	public Property(IndoorLocation lo, String ip,int port,String name){
 		this.location = lo;
 		this.ip = ip;
 		this.port = port;
@@ -57,7 +56,7 @@ public class Property implements Classifier,Serializable{
 	public IndoorLocation getLocation() {
 		return location;
 	}
-	public InetAddress getIp() {
+	public String getIp() {
 		return ip;
 	}
 	public int getPort() {
@@ -69,7 +68,7 @@ public class Property implements Classifier,Serializable{
 	public void setLocation(IndoorLocation location) {
 		this.location = location;
 	}
-	public void setIp(InetAddress ip) {
+	public void setIp(String ip) {
 		this.ip = ip;
 	}
 	public void setPort(int port) {

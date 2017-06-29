@@ -1,7 +1,6 @@
 package tcpIp;
 
 import java.io.ByteArrayOutputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -17,7 +16,7 @@ public class SocketServer extends SocketComm implements Runnable{
 	//**********private member
 	private final static int BUF_SIZE = 1024;
 
-//	private InetAddress addr;
+	private String addr;
 	private int port;
 	private Selector selector;
 	private byte[] sendData;
@@ -27,8 +26,8 @@ public class SocketServer extends SocketComm implements Runnable{
 	//***************************
 
 	//************constructor
-	public SocketServer(InetAddress addr, int port) {
-//		this.addr = addr;
+	public SocketServer(String addr, int port) {
+		this.addr = addr;
 		this.port = port;
 	}
 
@@ -134,12 +133,12 @@ public class SocketServer extends SocketComm implements Runnable{
 			}
 			byte[] contents = baos.toByteArray();
 			byte header = contents[0];
+			remoteAddress = channel.socket().getRemoteSocketAddress().toString();
 			Classifier cl = (Classifier) Converter.deserialize(contents);
 			cl.readFunc(header,this);
 		} catch (Exception e) {
 			System.err.println("SocketClient:doRead()[error]");
 			e.printStackTrace();
-		} finally {
 			System.out.println("[client]:" + channel.socket().getRemoteSocketAddress().toString() + ":[disconnect]");
 			try {
 				channel.close();

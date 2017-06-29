@@ -2,8 +2,6 @@ package gui;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -80,9 +78,9 @@ public class MainWindow extends JFrame {
 //			System.out.println(Property.getInstance().getLocation().toString());
 
 
-			InetAddress addr;
+			String addr;
 			try {
-				addr = InetAddress.getLocalHost();
+				addr = "localhost";
 				SocketServer ss = new SocketServer(addr,port);
 				Thread serverThread = new Thread(ss);
 				serverThread.start();
@@ -91,22 +89,14 @@ public class MainWindow extends JFrame {
 				Thread clientThread = new Thread(sc);
 				clientThread.start();
 
-				Property testDevice = new Property(new IndoorLocation(10, 10, 10), InetAddress.getLocalHost(), 22222, "testDevice");
+				Property testDevice = new Property(new IndoorLocation(10, 10, 10), "localhost", 22222, "testDevice");
 				sc.asyncSend(testDevice, (byte)0);
-
-				clientThread.join();
-
-				SocketClient sc2 = new SocketClient(addr, SERVER_PORT);
-				clientThread= new Thread(sc2);
-				clientThread.start();
-				sc2.asyncSend(new IndoorLocation(9, 8, 9), (byte)0);
+				Thread.sleep(500);
+				sc.asyncSend(new IndoorLocation(9, 8, 9), (byte)0);
 
 
-			} catch (UnknownHostException e1) {
+			} catch (Exception e1) {
 				System.err.println("aaa");
-				e1.printStackTrace();
-			} catch (InterruptedException e1) {
-				// TODO 自動生成された catch ブロック
 				e1.printStackTrace();
 			}
 
