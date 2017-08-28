@@ -14,15 +14,16 @@ public class Property implements Classifier,Serializable{
 	private String ip;
 	private int port;
 	private String name;
+	private SocketClient sc;
 
-	public void readFunc(byte header, SocketComm sc){
+	public void readFunc(byte header, SocketComm _sc){
 		switch(header){
 		case 0x00:
 			//header == 0x00
 			//提供されたPropertyを持つ端末とtcpip通信を確立
 			try{
-				SocketClient _sc = new SocketClient(ip, port);
-				Thread clientThread = new Thread(_sc);
+				sc = new SocketClient(ip, port);
+				Thread clientThread = new Thread(sc);
 				clientThread.start();
 				sc.asyncSend(new Message("Property Received"),(byte)0);
 			}catch (Exception e) {
@@ -65,6 +66,23 @@ public class Property implements Classifier,Serializable{
 	public String getName() {
 		return name;
 	}
+
+	public SocketClient getSocketClient() {
+		if(sc != null)	{
+			return sc;
+		}else{
+			try{
+					sc = new SocketClient(ip, port);
+					Thread clientThread = new Thread(sc);
+					clientThread.start();
+					return sc;
+				}catch (Exception e) {
+					System.err.println("Property:getSocketClient:connection()[error]");
+					return null;
+			}
+		}
+	}
+
 	public void setLocation(IndoorLocation location) {
 		this.location = location;
 	}
