@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import javax.swing.ImageIcon;
 
-import gui.FilePresentationWindow;
 import tcpIp.SocketComm;
 
 public class File implements Serializable, Classifier {
@@ -14,16 +13,6 @@ public class File implements Serializable, Classifier {
 
 	@Override
 	public void readFunc(byte header, SocketComm sc) {
-		switch(header){
-
-		case 0x00:
-			//imageicon
-			FilePresentationWindow frame = new FilePresentationWindow();
-			frame.ImagePresenter(ii);
-			frame.setVisible(true);
-			sc.asyncSend(new Message("image Received"),(byte)0);
-		default:
-		}
 
 	}
 
