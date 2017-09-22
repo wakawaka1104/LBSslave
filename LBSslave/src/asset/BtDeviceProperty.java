@@ -1,6 +1,7 @@
 package asset;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.DiscoveryAgent;
@@ -18,8 +19,8 @@ public class BtDeviceProperty extends Property {
 	//constructor
 	public BtDeviceProperty() {
 	}
-	public BtDeviceProperty(IndoorLocation location, String name, LocalDevice local){
-		super(location,name);
+	public BtDeviceProperty(IndoorLocation location, String name, ArrayList<String> function, LocalDevice local){
+		super(location,name,function);
 		this.local = local;
 	}
 
@@ -43,9 +44,9 @@ public class BtDeviceProperty extends Property {
 
 	//static method
 	//自身のBt情報をPropertyに変換
-	static BtDeviceProperty getLocalBtProperty(IndoorLocation location, String name){
+	static BtDeviceProperty getLocalBtProperty(Property prop){
 		try {
-			return new BtDeviceProperty(location,name,LocalDevice.getLocalDevice());
+			return new BtDeviceProperty(prop.getLocation(),prop.getName(),prop.getFunction(),LocalDevice.getLocalDevice());
 		} catch (BluetoothStateException e) {
 			System.err.println("BtDeviceProperty:getLocalBtProperty[error]:the Bluetooth system could not be initialized\n");
 			e.printStackTrace();
@@ -55,7 +56,7 @@ public class BtDeviceProperty extends Property {
 
 	//test method
 	public static void main(String[] args) {
-		System.out.println(getLocalBtProperty(new IndoorLocation(0,0,0),"test").toString());
+//		System.out.println(getLocalBtProperty(new IndoorLocation(0,0,0),"test").toString());
 		try {
 			RemoteDevice[] preknownDevices = LocalDevice.getLocalDevice().getDiscoveryAgent()
 					.retrieveDevices(DiscoveryAgent.PREKNOWN);

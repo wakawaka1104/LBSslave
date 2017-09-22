@@ -18,7 +18,8 @@ public class SlaveList implements Classifier,Serializable{
 
 	//singleton pattern
 	private static SlaveList sl = new SlaveList();
-	private static ArrayList<Property> slaveList = new ArrayList<Property>();
+
+	private ArrayList<Property> slaveList = new ArrayList<Property>();
 
 	//constructor
 	private SlaveList(){
@@ -38,7 +39,7 @@ public class SlaveList implements Classifier,Serializable{
 		Property nearest = null;
 		//遠すぎる場合は見ない
 		double distMin = Constant.THRETHOLD;
-		for(Iterator<Property> it = slaveList.iterator(); it.hasNext();){
+		for(Iterator<Property> it = SlaveList.getInstance().slaveList.iterator(); it.hasNext();){
 			Property tmp = it.next();
 			double dist = tmp.getLocation().dist(locate);
 			if (distMin > dist ){
@@ -57,7 +58,7 @@ public class SlaveList implements Classifier,Serializable{
 	public static void loadList(){
 		try {
 			XMLDecoder d = new XMLDecoder(new BufferedInputStream(new FileInputStream("config" + File.separator + "SlaveList.xml")));
-			slaveList = ((ArrayList<Property>)d.readObject());
+			SlaveList.getInstance().slaveList = ((ArrayList<Property>)d.readObject());
 			d.close();
 		} catch (FileNotFoundException e) {
 			// TODO 自動生成された catch ブロック
@@ -69,7 +70,7 @@ public class SlaveList implements Classifier,Serializable{
 	public static void writeList(){
 		try {
 			XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("config" + File.separator + "SlaveList.xml")));
-			e.writeObject(slaveList);
+			e.writeObject(SlaveList.getInstance().slaveList);
 			e.close();
 		} catch (FileNotFoundException e) {
 			// TODO 自動生成された catch ブロック
@@ -95,8 +96,14 @@ public class SlaveList implements Classifier,Serializable{
 
 	public static void main(String[] args) throws FileNotFoundException {
 //		//write
-//		SlaveList.getInstance().slaveAdd(new Property(new IndoorLocation(10,10,10),"test1"));
-//		SlaveList.getInstance().slaveAdd(new Property(new IndoorLocation(-50,50,50),"test2"));
+//		ArrayList<String> func1 = new ArrayList<>();
+//		ArrayList<String> func2 = new ArrayList<>();
+//		func1.add("file receive");
+//		func2.add("cooperation");
+//		func2.add("get administration");
+//
+//		SlaveList.getInstance().slaveAdd(new Property(new IndoorLocation(10,10,10),"test1",func1));
+//		SlaveList.getInstance().slaveAdd(new Property(new IndoorLocation(-50,50,50),"test2",func2));
 //		writeList();
 
 		//read

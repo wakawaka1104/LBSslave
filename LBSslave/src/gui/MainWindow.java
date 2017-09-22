@@ -14,7 +14,6 @@ import javax.swing.border.EmptyBorder;
 
 import asset.IndoorLocation;
 import asset.Property;
-import asset.TcpipDeviceProperty;
 import tcpIp.SocketClient;
 import tcpIp.SocketServer;
 
@@ -81,19 +80,23 @@ public class MainWindow extends JFrame {
 
 			String addr;
 			try {
+
 				addr = "localhost";
 				SocketServer ss = new SocketServer(addr,port);
 				Thread serverThread = new Thread(ss);
 				serverThread.start();
 
+
 				SocketClient sc = new SocketClient(addr, SERVER_PORT);
 				Thread clientThread = new Thread(sc);
 				clientThread.start();
 
-				TcpipDeviceProperty testDevice = new TcpipDeviceProperty(new IndoorLocation(10, 10, 10),"testDevice",22222,"localhost");
-				sc.asyncSend(testDevice, (byte)0);
-				Thread.sleep(500);
-				sc.asyncSend(new IndoorLocation(9, 8, 9), (byte)0);
+
+
+//				TcpipDeviceProperty testDevice = new TcpipDeviceProperty(new IndoorLocation(10, 10, 10),"testDevice",22222,"localhost");
+//				sc.asyncSend(testDevice, (byte)0);
+//				Thread.sleep(500);
+//				sc.asyncSend(new IndoorLocation(9, 8, 9), (byte)0);
 
 
 			} catch (Exception e1) {

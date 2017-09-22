@@ -1,5 +1,7 @@
 package asset;
 
+import java.util.ArrayList;
+
 import tcpIp.SocketClient;
 import tcpIp.SocketComm;
 
@@ -12,19 +14,17 @@ public class TcpipDeviceProperty extends Property {
 	//public func
 	@Override
 	public void readFunc(byte header, SocketComm sc) {
-		this.sc = new SocketClient(ip,port);
-		Thread clientThread = new Thread(this.sc);
-		clientThread.start();
+		SlaveList.getInstance().slaveAdd(this);
 	}
 
-	public TcpipDeviceProperty(IndoorLocation lo, String ip,int port,String name){
-		super(lo,name);
+	public TcpipDeviceProperty(IndoorLocation location, String ip,int port,String name, ArrayList<String> function){
+		super(location,name,function);
 		this.ip = ip;
 		this.port = port;
 	}
 
 	public TcpipDeviceProperty(TcpipDeviceProperty prop){
-		super(prop.getLocation(),prop.getName());
+		super(prop.getLocation(),prop.getName(),prop.getFunction());
 		this.ip = getIp();
 		this.port = getPort();
 	}
