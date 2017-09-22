@@ -19,8 +19,8 @@ public class BtDeviceProperty extends Property {
 	//constructor
 	public BtDeviceProperty() {
 	}
-	public BtDeviceProperty(IndoorLocation location, String name, ArrayList<String> function, LocalDevice local){
-		super(location,name,function);
+	public BtDeviceProperty(IndoorLocation location, String name, ArrayList<String> function, int classify, LocalDevice local){
+		super(location,name,function,classify);
 		this.local = local;
 	}
 
@@ -46,7 +46,7 @@ public class BtDeviceProperty extends Property {
 	//自身のBt情報をPropertyに変換
 	static BtDeviceProperty getLocalBtProperty(Property prop){
 		try {
-			return new BtDeviceProperty(prop.getLocation(),prop.getName(),prop.getFunction(),LocalDevice.getLocalDevice());
+			return new BtDeviceProperty(prop.getLocation(),prop.getName(),prop.getFunction(),prop.getClassify(),LocalDevice.getLocalDevice());
 		} catch (BluetoothStateException e) {
 			System.err.println("BtDeviceProperty:getLocalBtProperty[error]:the Bluetooth system could not be initialized\n");
 			e.printStackTrace();

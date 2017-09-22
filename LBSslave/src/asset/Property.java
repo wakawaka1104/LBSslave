@@ -11,6 +11,7 @@ public class Property implements Classifier,Serializable{
 	private static final long serialVersionUID = 2L;
 
 	//member
+	private int classify;
 	private IndoorLocation location;
 	private String name;
 	private ArrayList<String> function;
@@ -30,10 +31,11 @@ public class Property implements Classifier,Serializable{
 	public Property(){
 	}
 
-	public Property(IndoorLocation lo,String name, ArrayList<String> function){
+	public Property(IndoorLocation lo,String name, ArrayList<String> function,int classify){
 		this.location = lo;
 		this.name = name;
 		this.function = function;
+		this.classify = classify;
 	}
 
 	public Property(Property prop){
@@ -41,6 +43,7 @@ public class Property implements Classifier,Serializable{
 		this.name = prop.getName();
 		this.function = prop.getFunction();
 		this.selection = prop.getSelection();
+		this.classify = prop.classify;
 	}
 
 
@@ -60,7 +63,6 @@ public class Property implements Classifier,Serializable{
 	public ArrayList<String> getFunction() {
 		return function;
 	}
-
 	public void setFunction(ArrayList<String> function) {
 		this.function = function;
 	}
@@ -69,6 +71,12 @@ public class Property implements Classifier,Serializable{
 	}
 	public void setSelection(String selection) {
 		this.selection = selection;
+	}
+	public int getClassify() {
+		return classify;
+	}
+	public void setClassify(int classify) {
+		this.classify = classify;
 	}
 
 	public String toString(){

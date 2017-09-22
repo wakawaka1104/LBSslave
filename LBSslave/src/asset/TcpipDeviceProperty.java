@@ -17,14 +17,14 @@ public class TcpipDeviceProperty extends Property {
 		SlaveList.getInstance().slaveAdd(this);
 	}
 
-	public TcpipDeviceProperty(IndoorLocation location, String ip,int port,String name, ArrayList<String> function){
-		super(location,name,function);
+	public TcpipDeviceProperty(IndoorLocation location, String ip,int port,String name, ArrayList<String> function,int classify){
+		super(location,name,function,classify);
 		this.ip = ip;
 		this.port = port;
 	}
 
 	public TcpipDeviceProperty(TcpipDeviceProperty prop){
-		super(prop.getLocation(),prop.getName(),prop.getFunction());
+		super(prop.getLocation(),prop.getName(),prop.getFunction(),prop.getClassify());
 		this.ip = getIp();
 		this.port = getPort();
 	}
