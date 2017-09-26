@@ -20,6 +20,9 @@ public class Message implements Serializable, Classifier {
 			//header == 0x00
 			//デバグ用メッセージの表示
 			System.out.println("[" + sc.remoteAddress + "]" + message);
+
+
+			sc.asyncSend(new Message("received by client"), (byte)0);
 		}
 	}
 

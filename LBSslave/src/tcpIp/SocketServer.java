@@ -21,7 +21,6 @@ public class SocketServer extends SocketComm implements Runnable{
 	private Selector selector;
 	private byte[] sendData;
 	private boolean sendFlag = false;
-	private ByteBuffer writeBuffer = ByteBuffer.allocate(BUF_SIZE);
 
 	//***************************
 
@@ -105,6 +104,9 @@ public class SocketServer extends SocketComm implements Runnable{
 
 	synchronized private void doSend(SocketChannel channel) {
 		try {
+
+			ByteBuffer writeBuffer = ByteBuffer.allocate(sendData.length);
+
 			//byte[]をwriteBufferに書き込み
 			writeBuffer.clear();
 			writeBuffer.put(sendData);

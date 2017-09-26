@@ -15,7 +15,6 @@ public class SocketClient extends SocketComm implements Runnable{
 	//**********private member
 	private final static int BUF_SIZE = 1024;
 
-
 	private String addr;
 	private int port;
 
@@ -23,7 +22,6 @@ public class SocketClient extends SocketComm implements Runnable{
 	private SocketChannel channel;
 	private byte[] sendData;
 	private boolean sendFlag = false;
-	private ByteBuffer writeBuffer = ByteBuffer.allocate(BUF_SIZE);
 
 	//**************************
 
@@ -94,6 +92,9 @@ public class SocketClient extends SocketComm implements Runnable{
 	// private function
 	synchronized private void doSend(SocketChannel channel) {
 		try {
+
+			ByteBuffer writeBuffer = ByteBuffer.allocate(sendData.length);
+
 			//byte[]をwriteBufferに書き込み
 			writeBuffer.clear();
 			writeBuffer.put(sendData);
