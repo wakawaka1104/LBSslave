@@ -1,12 +1,14 @@
 package tcpIp;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import asset.Classifier;
@@ -84,6 +86,7 @@ public class SocketServer extends SocketComm implements Runnable{
 	public void asyncSend(Classifier ob, byte header){
 		while(sendFlag == false){
 			sendData = Converter.serialize(ob,header);
+			System.out.println("asyncSend:" + ob.getClassName());
 			sendFlag = true;
 		}
 	}
@@ -113,6 +116,7 @@ public class SocketServer extends SocketComm implements Runnable{
 			writeBuffer.flip();
 
 			//send処理
+			System.out.println( "ServerSend:[" + new Timestamp(System.currentTimeMillis()).toString() + "]");
 			channel.write(writeBuffer);
 			writeBuffer.clear();
 			return;
@@ -125,21 +129,36 @@ public class SocketServer extends SocketComm implements Runnable{
 	}
 
 	private void doRead(SocketChannel channel) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		//読み取ったバイト列を格納するList
+		ArrayList<Byte> contentsList = new ArrayList<Byte>();
+		//channelから読み取るバイトを一時保持する変数
+		ByteBuffer tmp = ByteBuffer.allocate(BUF_SIZE);
+		System.out.println( "ServerRead:[" + new Timestamp(System.currentTimeMillis()).toString() + "]");
 		try {
 			while(true){
-				ByteBuffer tmp = ByteBuffer.allocate(BUF_SIZE);
-				int readSize = channel.read(tmp);
-				baos.write(tmp.array());
-				if(readSize < BUF_SIZE) break;
+				if(channel.read(tmp) <= 0) break;
+				tmp.flip();
+				while(tmp.hasRemaining()){
+					contentsList.add(tmp.get());
+				}
+				tmp.clear();
 			}
-			byte[] contents = baos.toByteArray();
+			int contentsSize = contentsList.size();
+			byte[] contents = new byte[contentsSize];
+			//頭悪い配列結合の図
+			for(int i = 0 ; i < contentsSize ; i++){
+				contents[i] = contentsList.get(i);
+			}
 			byte header = contents[0];
-			remoteAddress = channel.socket().getRemoteSocketAddress().toString();
 			Classifier cl = (Classifier) Converter.deserialize(contents);
+			System.out.println("Read:" + cl.getClassName());
 			cl.readFunc(header,this);
-		} catch (Exception e) {
-			System.err.println("SocketClient:doRead()[error]");
+		}catch(ClassifierReadException e){
+			System.err.println("SocketServer:doRead()[error]");
+			System.err.println("読み込んだデータがClassifierクラスでないか、不要な読み込みが行われました．");
+		}
+		catch (IOException e) {
+			System.err.println("SocketServer:doRead()[error]");
 			e.printStackTrace();
 			System.out.println("[client]:" + channel.socket().getRemoteSocketAddress().toString() + ":[disconnect]");
 			try {

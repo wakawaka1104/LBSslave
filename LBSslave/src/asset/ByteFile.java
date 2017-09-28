@@ -17,7 +17,7 @@ public class ByteFile implements Serializable, Classifier {
 
 	@Override
 	public void readFunc(byte header, SocketComm sc) {
-
+		System.out.println("[ByteFile]file received");
 	}
 
 	public byte[] getFile() {
@@ -34,6 +34,11 @@ public class ByteFile implements Serializable, Classifier {
 
 	public void setExtension(String extension) {
 		this.extension = extension;
+	}
+
+	@Override
+	public String getClassName() {
+		return "ByteFile";
 	}
 
 

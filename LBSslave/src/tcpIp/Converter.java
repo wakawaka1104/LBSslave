@@ -34,18 +34,16 @@ public class Converter {
 		}
 	}
 
-	public static Object deserialize(byte[] contents){
-		try {
+	public static Object deserialize(byte[] contents) throws ClassifierReadException{
+		try{
 			ByteArrayInputStream bais = new ByteArrayInputStream(contents,1,contents.length-1);
 			ObjectInputStream ois = new ObjectInputStream(bais);
 			Object tmp = ois.readObject();
 			bais.close();
 			ois.close();
 			return tmp;
-		} catch (Exception e) {
-			System.err.println("Converter:deserialize()[error]");
-			e.printStackTrace();
-			return null;
+		}catch(Exception e){
+			throw new ClassifierReadException();
 		}
 	}
 }

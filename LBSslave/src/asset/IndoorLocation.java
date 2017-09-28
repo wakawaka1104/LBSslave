@@ -30,14 +30,6 @@ public class IndoorLocation implements Classifier,Serializable{
 
 	@Override
 	public void readFunc(byte header, SocketComm sc) {
-		Property prop = SlaveList.slaveSearch(this);
-		//機器が存在すれば対象機器のPropertyをserializeしてお返し
-		if(prop != null){
-			sc.asyncSend(prop,(byte)0);
-			sc.asyncSend(new Message("Property Send"),(byte)0);
-		}else{
-			sc.asyncSend(new Message("devices not found"),(byte)0);
-		}
 	}
 
 	public double getX() {
@@ -61,6 +53,10 @@ public class IndoorLocation implements Classifier,Serializable{
 
 	public String toString(){
 		return "x:[" + x + "],y:[" + y + "],z:[" + z + "]";
+	}
+	@Override
+	public String getClassName() {
+		return "IndoorLocation";
 	}
 
 }

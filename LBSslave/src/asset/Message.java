@@ -21,13 +21,16 @@ public class Message implements Serializable, Classifier {
 			//デバグ用メッセージの表示
 			System.out.println("[" + sc.remoteAddress + "]" + message);
 
-
-			sc.asyncSend(new Message("received by client"), (byte)0);
 		}
 	}
 
 	public void setMessage(String message){
 		this.message = message;
+	}
+
+	@Override
+	public String getClassName() {
+		return "Message";
 	}
 
 }

@@ -111,4 +111,10 @@ public class SlaveList implements Classifier,Serializable{
 		System.out.println(SlaveList.getInstance().toString());
 	}
 
+
+	@Override
+	public String getClassName() {
+		return "SlaveList";
+	}
+
 }

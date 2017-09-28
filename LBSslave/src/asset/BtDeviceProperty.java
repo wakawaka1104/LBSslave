@@ -42,6 +42,10 @@ public class BtDeviceProperty extends Property {
 		}
 	}
 
+	public String getClassName(){
+		return "BtDeviceProperty";
+	}
+
 	//static method
 	//自身のBt情報をPropertyに変換
 	static BtDeviceProperty getLocalBtProperty(Property prop){

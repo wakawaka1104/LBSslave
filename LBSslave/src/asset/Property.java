@@ -20,7 +20,7 @@ public class Property implements Classifier,Serializable{
 
 	@Override
 	public void readFunc(byte header, SocketComm sc) {
-		SlaveList.getInstance().slaveAdd(this);
+
 	}
 
 	public Order makeOrder(){
@@ -87,6 +87,11 @@ public class Property implements Classifier,Serializable{
 		}
 		tmp += "]\n";
 		return tmp;
+	}
+
+	@Override
+	public String getClassName() {
+		return "Property";
 	}
 
 

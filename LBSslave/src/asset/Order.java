@@ -39,10 +39,13 @@ public class Order implements Serializable, Classifier {
 		default:
 			break;
 		}
-
 	}
 
 	public void setMessage(String order){
 		this.order = order;
+	}
+	@Override
+	public String getClassName() {
+		return "Order";
 	}
 }

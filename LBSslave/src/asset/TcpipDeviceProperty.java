@@ -59,4 +59,7 @@ public class TcpipDeviceProperty extends Property {
 	public String toString(){
 		return "Location:"+this.getLocation().toString()+"\n"+"ip:"+ip.toString()+"\n"+"port:"+port+"\n"+"name:"+this.getName()+"\n" ;
 	}
+	public String getClassName(){
+		return "TcpIpProperty";
+	}
 }
