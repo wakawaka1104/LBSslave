@@ -79,6 +79,11 @@ public class SocketClient extends SocketComm implements Runnable{
 	}
 
 	public void asyncSend(byte[] data){
+
+		while(sendFlag == true){
+
+		}
+
 		while(sendFlag == false){
 			sendData = data;
 			sendFlag = true;
@@ -86,6 +91,11 @@ public class SocketClient extends SocketComm implements Runnable{
 	}
 
 	public void asyncSend(Classifier ob, byte header){
+
+		while(sendFlag == true){
+
+		}
+
 		while(sendFlag == false){
 			sendData = Converter.serialize(ob,header);
 			System.out.println("asyncSend:" + ob.getClassName());
