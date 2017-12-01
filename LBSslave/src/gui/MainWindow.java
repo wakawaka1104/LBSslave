@@ -12,16 +12,20 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import asset.DeviceProperty;
 import asset.IndoorLocation;
-import asset.Property;
-import tcpIp.SocketClient;
+import asset.MyProperty;
 import tcpIp.SocketServer;
 
+/**
+ * @author shun
+ *
+ */
 public class MainWindow extends JFrame {
 
 	private static final int SERVER_PORT = 11111;
 
-	private static Property myProp = new Property();
+	private static DeviceProperty myProp = new DeviceProperty();
 	private static int port;
 
 	private JPanel contentPane;
@@ -81,15 +85,17 @@ public class MainWindow extends JFrame {
 			String addr;
 			try {
 
+				MyProperty.setFunction("camera");
+
 				addr = "localhost";
 				SocketServer ss = new SocketServer(addr,port);
 				Thread serverThread = new Thread(ss);
 				serverThread.start();
 
-
-				SocketClient sc = new SocketClient(addr, SERVER_PORT);
-				Thread clientThread = new Thread(sc);
-				clientThread.start();
+//
+//				SocketClient sc = new SocketClient(addr, SERVER_PORT);
+//				Thread clientThread = new Thread(sc);
+//				clientThread.start();
 
 
 

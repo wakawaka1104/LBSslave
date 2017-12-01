@@ -30,6 +30,7 @@ public class IndoorLocation implements Classifier,Serializable{
 
 	@Override
 	public void readFunc(byte header, SocketComm sc) {
+
 	}
 
 	public double getX() {

@@ -3,5 +3,8 @@
 	<classpathentry kind="src" path="LBSslave/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/home/git/bluecove-2.1.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/shun/Downloads/webcam-capture-0.3.10-dist/webcam-capture-0.3.10.jar"/>
+	<classpathentry kind="lib" path="C:/Users/shun/Downloads/webcam-capture-0.3.10-dist/libs/bridj-0.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/shun/Downloads/webcam-capture-0.3.10-dist/libs/slf4j-api-1.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

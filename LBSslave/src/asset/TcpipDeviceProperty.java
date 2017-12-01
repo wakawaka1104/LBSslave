@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import tcpIp.SocketClient;
 import tcpIp.SocketComm;
 
-public class TcpipDeviceProperty extends Property {
+public class TcpipDeviceProperty extends DeviceProperty {
 	//member
 	private String ip;
 	private int port;

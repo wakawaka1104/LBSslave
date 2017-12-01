@@ -18,6 +18,7 @@ public class ByteFile implements Serializable, Classifier {
 	@Override
 	public void readFunc(byte header, SocketComm sc) {
 		System.out.println("[ByteFile]file received");
+		System.out.println("Size:" + file.length);
 	}
 
 	public byte[] getFile() {

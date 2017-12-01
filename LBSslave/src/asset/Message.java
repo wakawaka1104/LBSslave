@@ -19,7 +19,7 @@ public class Message implements Serializable, Classifier {
 		case 0x00:
 			//header == 0x00
 			//デバグ用メッセージの表示
-			System.out.println("[" + sc.remoteAddress + "]" + message);
+			System.out.println("[" + "]" + message);
 
 		}
 	}
