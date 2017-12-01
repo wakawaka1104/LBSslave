@@ -1,43 +1,36 @@
 package tcpIp;
 
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import asset.Classifier;
+import javax.imageio.ImageIO;
 
-public class SocketClient extends SocketComm implements Runnable{
+import asset.ByteFile;
+import asset.DeviceProperty;
+import asset.IndoorLocation;
 
-	//**********private member
-	private final static int BUF_SIZE = 1024;
+public class SocketClient extends SocketComm implements Runnable,Serializable{
 
-	private String addr;
-	private int port;
-
-	private Selector selector;
+	//***********private member
 	private SocketChannel channel;
-	private byte[] sendData;
-	private boolean sendFlag = false;
-
-	//**************************
+	private String remoteAddress;
+	//***********
 
 	//************constructor
-
 	public SocketClient(String addr, int port) {
-		this.addr = addr;
-		this.port = port;
+		super(addr,port);
 	}
-
 	//************************
 
 	//run():タスク実行時関数
-	//sendFlag == true ならば送信処理
+	//sendDataにデータがあれば送信処理
 	//それ以外はread待機
 	public void run() {
 		//channel open処理
@@ -59,11 +52,11 @@ public class SocketClient extends SocketComm implements Runnable{
 
 		//送受信待機ループ
 		try {
-			while (selector.select() > 0) {
+			while (selector.select() > 0 || selector.selectedKeys().size() > 0 ){
 				for (Iterator<SelectionKey> it = selector.selectedKeys().iterator(); it.hasNext();) {
 					SelectionKey key = (SelectionKey) it.next();
 					it.remove();
-					if (sendFlag && key.isWritable()) {
+					if (!sendData.isEmpty() && key.isWritable()) {
 						doSend((SocketChannel)key.channel());
 					}
 					if (key.isReadable()) {
@@ -78,83 +71,54 @@ public class SocketClient extends SocketComm implements Runnable{
 		}
 	}
 
-	public void asyncSend(byte[] data){
-		while(sendFlag == false){
-			sendData = data;
-			sendFlag = true;
-		}
+	public String getClassName(){
+		return "SocketClient";
 	}
 
-	public void asyncSend(Classifier ob, byte header){
-		while(sendFlag == false){
-			sendData = Converter.serialize(ob,header);
-			System.out.println("asyncSend:" + ob.getClassName());
-			sendFlag = true;
-		}
-	}
-	// private function
-	synchronized private void doSend(SocketChannel channel) {
-		try {
 
-			ByteBuffer writeBuffer = ByteBuffer.allocate(sendData.length);
 
-			//byte[]をwriteBufferに書き込み
-			writeBuffer.clear();
-			writeBuffer.put(sendData);
-			writeBuffer.flip();
 
-			//send処理
-			channel.write(writeBuffer);
-			System.out.println( "ClientSend:[" + new Timestamp(System.currentTimeMillis()).toString() + "]");
-			writeBuffer.clear();
-		} catch (Exception e) {
-			System.err.println("SocketClient:doSend[error]");
+
+	//test function
+	//SocketServerと同時に実行すること
+	//localhostでの仮テスト
+	public static void main(String[] args) {
+
+		//クライアント起動
+		SocketClient sc = new SocketClient("localhost",11111);
+		Thread client = new Thread(sc);
+		client.start();
+
+		try{
+			//sendテスト1
+			byte[] tmp = {0,1,1,1,1,1,0,1,0,0,0,1};
+			sc.asyncSend(tmp);
+			System.out.println("test1 completed");
+			Thread.sleep(500);
+
+			DeviceProperty prop = new DeviceProperty(new IndoorLocation(1,1,1),"testDevice",new ArrayList<String>(), 1);
+			sc.asyncSend(prop, (byte)1);
+			System.out.println("test1-2 completed");
+			Thread.sleep(500);
+
+			//連続sendテスト2
+			for(int i=0 ; i < 5 ; i++){
+				sc.asyncSend(new DeviceProperty(new IndoorLocation(1,1,1),"testDevice"+ i,new ArrayList<String>(),1),(byte)1);
+				//現状同一channelへの書き込みはある程度のインターバルを空ける必要あり
+				Thread.sleep(500);
+			}
+			System.out.println("test2 completed");
+			Thread.sleep(500);
+
+			//サイズ大のsendテスト3
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(ImageIO.read(new File("img"+File.separator+"poputepic.png")), "png", baos);
+			sc.asyncSend(new ByteFile(baos.toByteArray(),"png"), (byte)0);
+			System.out.println("test3 completed");
+
+		}catch(Exception e){
 			e.printStackTrace();
-			System.out.println("[server]:" + channel.socket().getRemoteSocketAddress().toString() + ":[disconnect]");
-		} finally {
-			sendFlag = false;
 		}
 	}
 
-	private void doRead(SocketChannel channel) {
-		//読み取ったバイト列を格納するList
-		ArrayList<Byte> contentsList = new ArrayList<Byte>();
-		//channelから読み取るバイトを一時保持する変数
-		ByteBuffer tmp = ByteBuffer.allocate(BUF_SIZE);
-		System.out.println( "ClientRead:[" + new Timestamp(System.currentTimeMillis()).toString() + "]");
-		try {
-			while(true){
-				if(channel.read(tmp) <= 0) break;
-				tmp.flip();
-				while(tmp.hasRemaining()){
-					contentsList.add(tmp.get());
-				}
-				tmp.clear();
-			}
-			int contentsSize = contentsList.size();
-			byte[] contents = new byte[contentsSize];
-			//頭悪い配列結合の図
-			for(int i = 0 ; i < contentsSize ; i++){
-				contents[i] = contentsList.get(i);
-			}
-			byte header = contents[0];
-			Classifier cl = (Classifier) Converter.deserialize(contents);
-			System.out.println("Read:" + cl.getClassName());
-			cl.readFunc(header,this);
-		}catch(ClassifierReadException e){
-			System.err.println("SocketClient:doRead()[error]");
-			System.err.println("読み込んだデータがClassifierクラスでないか、不要な読み込みが行われました．");
-		}
-		catch (IOException e) {
-			System.err.println("SocketClient:doRead()[error]");
-			e.printStackTrace();
-			System.out.println("[client]:" + channel.socket().getRemoteSocketAddress().toString() + ":[disconnect]");
-			try {
-				channel.close();
-			} catch (Exception _e) {
-				System.err.println("SocketClient:doRead():close()[error]");
-				_e.printStackTrace();
-			}
-		}
-	}
 }

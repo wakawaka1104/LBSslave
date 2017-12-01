@@ -1,11 +1,12 @@
 package asset;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import tcpIp.SocketClient;
 import tcpIp.SocketComm;
 
-public class TcpipDeviceProperty extends DeviceProperty {
+public class TcpipDeviceProperty extends DeviceProperty implements Classifier,Serializable{
 	//member
 	private String ip;
 	private int port;

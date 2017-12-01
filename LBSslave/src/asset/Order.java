@@ -70,7 +70,7 @@ public class Order implements Serializable, Classifier {
 				}
 
 			}else if(functionSearch("display")){
-
+				
 			}
 			break;
 		default:

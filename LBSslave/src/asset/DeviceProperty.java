@@ -1,11 +1,12 @@
 package asset;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import tcpIp.SocketComm;
 
-public class DeviceProperty extends Property {
+public class DeviceProperty extends Property implements Classifier,Serializable{
 
 	private static final long serialVersionUID = 2L;
 
