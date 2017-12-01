@@ -2,6 +2,7 @@ package tcpIp;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
@@ -13,6 +14,7 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 
 import asset.ByteFile;
+import asset.Classifier;
 import asset.DeviceProperty;
 import asset.IndoorLocation;
 
@@ -47,6 +49,12 @@ public class SocketClient extends SocketComm implements Runnable,Serializable{
 		} catch (Exception e) {
 			System.err.println("SocketClient:open()[error]");
 			e.printStackTrace();
+			try {
+				channel.close();
+			} catch (IOException e1) {
+				// TODO 自動生成された catch ブロック
+				e1.printStackTrace();
+			}
 			return;
 		}
 
@@ -67,12 +75,41 @@ public class SocketClient extends SocketComm implements Runnable,Serializable{
 		} catch (Exception e) {
 			System.err.println("SocketClient:run()[error]");
 			e.printStackTrace();
+			try {
+				channel.close();
+			} catch (IOException e1) {
+				// TODO 自動生成された catch ブロック
+				e1.printStackTrace();
+			}
 			return;
 		}
 	}
 
 	public String getClassName(){
 		return "SocketClient";
+	}
+
+
+
+	public void asyncSend(byte[] data){
+		//last in
+		sendData.add(data);
+	}
+
+	public void asyncSend(Classifier ob, byte header){
+		//last in
+		try {
+			sendData.add(Converter.serialize(ob,header));
+		} catch (IOException e) {
+			try {
+				channel.close();
+			} catch (IOException e1) {
+				// TODO 自動生成された catch ブロック
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+		System.out.println("asyncSend:" + ob.getClassName());
 	}
 
 

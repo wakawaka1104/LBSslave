@@ -36,17 +36,7 @@ public abstract class SocketComm implements Serializable{
 	//Class名を返す(ログ用)
 	abstract public String getClassName();
 
-
-	public void asyncSend(byte[] data){
-		//last in
-		sendData.add(data);
-	}
-
-	public void asyncSend(Classifier ob, byte header){
-		//last in
-		sendData.add(Converter.serialize(ob,header));
-		System.out.println("asyncSend:" + ob.getClassName());
-	}
+	abstract public void asyncSend(Classifier cl, byte header);
 
 	protected void doSend(SocketChannel channel) {
 		try {
@@ -76,9 +66,9 @@ public abstract class SocketComm implements Serializable{
 			ArrayList<Byte> contentsList = new ArrayList<Byte>();
 			//channelから読み取るバイトを一時保持する変数
 			ByteBuffer tmp = ByteBuffer.allocate(BUF_SIZE);
-			System.out.println( getClassName() + ":Read:[" + new Timestamp(System.currentTimeMillis()).toString() + "]");
+//			System.out.println( getClassName() + ":Read:[" + new Timestamp(System.currentTimeMillis()).toString() + "]");
 			while(true){
-				if(channel.read(tmp) <= 0) break;
+				if(channel.read(tmp) < 0) break;
 				tmp.flip();
 				while(tmp.hasRemaining()){
 					contentsList.add(tmp.get());
@@ -86,6 +76,7 @@ public abstract class SocketComm implements Serializable{
 				tmp.clear();
 			}
 			int contentsSize = contentsList.size();
+			if(contentsSize <= 0) return;
 			byte[] contents = new byte[contentsSize];
 			//頭悪い配列結合の図
 			for(int i = 0 ; i < contentsSize ; i++){

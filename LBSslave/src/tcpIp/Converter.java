@@ -20,18 +20,13 @@ public class Converter {
 		return byteConverter;
 	}
 
-	public static byte[] serialize(Classifier cl, byte header) {
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			baos.write(header);
-			ObjectOutput oo = new ObjectOutputStream(baos);
-			oo.writeObject(cl);
-			return baos.toByteArray();
-		} catch (IOException e) {
-			System.err.println("Converter:serialize()[error]");
-			e.printStackTrace();
-			return null;
-		}
+	public static byte[] serialize(Classifier cl, byte header) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		baos.write(header);
+		ObjectOutput oo = new ObjectOutputStream(baos);
+		oo.writeObject(cl);
+		return baos.toByteArray();
+
 	}
 
 	public static Object deserialize(byte[] contents) throws ClassifierReadException{

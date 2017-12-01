@@ -46,7 +46,8 @@ public class Order implements Serializable, Classifier {
 			System.out.println("File sent");
 			break;
 		case "camera":
-			if(functionSearch("camera")){
+//			if(functionSearch("camera")){
+			if(true){
 				Webcam webcam = null;
 				webcam = Webcam.getDefault();
 				if (webcam != null) {
@@ -70,7 +71,7 @@ public class Order implements Serializable, Classifier {
 				}
 
 			}else if(functionSearch("display")){
-				
+
 			}
 			break;
 		default:
@@ -97,5 +98,20 @@ public class Order implements Serializable, Classifier {
 	@Override
 	public String getClassName() {
 		return "Order";
+	}
+
+
+	public static void main(String[] args) {
+		Order tmp = new Order("test",
+				new TcpipDeviceProperty(new IndoorLocation(0,0,0),"localhost",11111,"test",new ArrayList<String>(),0),
+				new TcpipDeviceProperty(new IndoorLocation(0,0,0),"localhost",11111,"test",new ArrayList<String>(),0)
+				);
+		try {
+			tcpIp.Converter.serialize(tmp, (byte)0);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		System.out.println("end");
 	}
 }

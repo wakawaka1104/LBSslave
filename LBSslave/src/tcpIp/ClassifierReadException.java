@@ -1,5 +1,7 @@
 package tcpIp;
 
-public class ClassifierReadException extends Exception{
+import java.io.Serializable;
+
+public class ClassifierReadException extends Exception implements Serializable{
 
 }

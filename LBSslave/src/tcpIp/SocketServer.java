@@ -1,5 +1,6 @@
 package tcpIp;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -7,7 +8,12 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
+import asset.Classifier;
+
 public class SocketServer extends SocketComm implements Runnable{
+
+
+	ServerSocketChannel serverChannel = null;
 
 	//************constructor
 	public SocketServer(String addr, int port) {
@@ -18,9 +24,8 @@ public class SocketServer extends SocketComm implements Runnable{
 	//run():タスク実行時関数
 	//sendDataにデータがあれば送信処理
 	//それ以外はread待機
-	public void run() {
+	public void run()	 {
 		//channel open処理
-		ServerSocketChannel serverChannel = null;
 		try{
 		selector = Selector.open();
 		serverChannel = ServerSocketChannel.open();
@@ -31,6 +36,12 @@ public class SocketServer extends SocketComm implements Runnable{
 		} catch(Exception e){
 			System.err.println("SocketServer:run()[error]");
 			e.printStackTrace();
+			try {
+				serverChannel.close();
+			} catch (IOException e1) {
+				// TODO 自動生成された catch ブロック
+				e1.printStackTrace();
+			}
 		}
 
 		//送受信待機ループ
@@ -53,6 +64,12 @@ public class SocketServer extends SocketComm implements Runnable{
 		} catch (Exception e) {
 			System.err.println("SocketServer:run()[error]");
 			e.printStackTrace();
+			try {
+				serverChannel.close();
+			} catch (IOException e1) {
+				// TODO 自動生成された catch ブロック
+				e1.printStackTrace();
+			}
 			return;
 		}
 	}
@@ -75,6 +92,28 @@ public class SocketServer extends SocketComm implements Runnable{
 		return "SocketServer";
 	}
 
+
+
+	public void asyncSend(byte[] data){
+		//last in
+		sendData.add(data);
+	}
+
+	public void asyncSend(Classifier ob, byte header){
+		//last in
+		try {
+			sendData.add(Converter.serialize(ob,header));
+		} catch (IOException e) {
+			try {
+				serverChannel.close();
+			} catch (IOException e1) {
+				// TODO 自動生成された catch ブロック
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+		System.out.println("asyncSend:" + ob.getClassName());
+	}
 
 
 
