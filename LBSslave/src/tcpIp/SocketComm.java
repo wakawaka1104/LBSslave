@@ -68,15 +68,20 @@ public abstract class SocketComm implements Serializable{
 			ByteBuffer tmp = ByteBuffer.allocate(BUF_SIZE);
 //			System.out.println( getClassName() + ":Read:[" + new Timestamp(System.currentTimeMillis()).toString() + "]");
 			while(true){
-				if(channel.read(tmp) < 0) break;
+				if(channel.read(tmp) <= 0) break;
 				tmp.flip();
 				while(tmp.hasRemaining()){
-					contentsList.add(tmp.get());
+					byte a = tmp.get();
+					System.out.println(a);
+					contentsList.add(a);
 				}
 				tmp.clear();
 			}
 			int contentsSize = contentsList.size();
-			if(contentsSize <= 0) return;
+			if(contentsSize <= 0) {
+				System.out.println("contentsSize==0");
+				return;
+			}
 			byte[] contents = new byte[contentsSize];
 			//頭悪い配列結合の図
 			for(int i = 0 ; i < contentsSize ; i++){
