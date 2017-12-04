@@ -12,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 public class FilePresentationWindow extends JFrame {
 
 	private JPanel contentPane;
-	private	JLabel label = new JLabel("");
+	private JLabel label = new JLabel("");
 	/**
 	 * Launch the application.
 	 */
@@ -39,16 +39,9 @@ public class FilePresentationWindow extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-
-
-		ImageIcon ii = new ImageIcon(".\\img\\poputepic.png");
-		label.setIcon(ii);
-
 		contentPane.add(label, BorderLayout.CENTER);
 	}
-
-	public void ImagePresenter(ImageIcon ii){
+	public void setImageIcon(ImageIcon ii){
 		label.setIcon(ii);
 	}
-
 }

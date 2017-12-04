@@ -46,16 +46,18 @@ public class Order implements Serializable, Classifier {
 			System.out.println("File sent");
 			break;
 		case "camera":
-//			if(functionSearch("camera")){
-			if(true){
+			if(functionSearch("camera")){
+//			if(true){
 				Webcam webcam = null;
 				webcam = Webcam.getDefault();
 				if (webcam != null) {
 					System.out.println("Webcam : " + webcam.getName());
 					webcam.open();
-					SocketClient propBsocket = ((TcpipDeviceProperty)propB).getSocketClient();
+					SocketClient propBsocket = new SocketClient( ((TcpipDeviceProperty)propB).getIp(),((TcpipDeviceProperty)propB).getPort());
+					Thread socketThreaad = new Thread(propBsocket);
+					socketThreaad.start();
 
-					while(true){
+//					while(true){
 						BufferedImage image = webcam.getImage();
 						ByteArrayOutputStream _baos = new ByteArrayOutputStream();
 						try {
@@ -64,15 +66,16 @@ public class Order implements Serializable, Classifier {
 							// TODO 自動生成された catch ブロック
 							e.printStackTrace();
 						}
-						propBsocket.asyncSend(new ByteFile(_baos.toByteArray(),"png"),(byte)0);
-					}
+						propBsocket.asyncSend(new ByteFile(_baos.toByteArray(),"png"),(byte)1);
+//					}
 				} else {
 					System.out.println("Failed: Webcam Not Found Error");
 				}
 
-			}else if(functionSearch("display")){
+			}else if(functionSearch("display")){			}
+			break;
+		case "file receive":
 
-			}
 			break;
 		default:
 			break;

@@ -2,6 +2,9 @@ package asset;
 
 import java.io.Serializable;
 
+import javax.swing.ImageIcon;
+
+import gui.FilePresentationWindow;
 import tcpIp.SocketComm;
 
 public class ByteFile implements Serializable, Classifier {
@@ -17,8 +20,8 @@ public class ByteFile implements Serializable, Classifier {
 
 	@Override
 	public void readFunc(byte header, SocketComm sc) {
-		System.out.println("[ByteFile]file received");
-		System.out.println("Size:" + file.length);
+		FilePresentationWindow fpw = new FilePresentationWindow();
+		fpw.setImageIcon(new ImageIcon(file));
 	}
 
 	public byte[] getFile() {
