@@ -22,7 +22,7 @@ public class DeviceProperty extends Property implements Classifier,Serializable{
 	public void readFunc(byte header, SocketComm sc) {
 		switch(header){
 			case (byte)0:
-				SlaveList.getInstance().slaveAdd(this);
+				SlaveList.add(this);
 				break;
 			case (byte)1:
 				System.out.println(toString());

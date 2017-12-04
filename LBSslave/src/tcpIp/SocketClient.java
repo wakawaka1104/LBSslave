@@ -109,7 +109,7 @@ public class SocketClient extends SocketComm implements Runnable,Serializable{
 			}
 			e.printStackTrace();
 		}
-		System.out.println("asyncSend:" + ob.getClassName());
+		System.out.println("sendList add:" + ob.getClassName());
 	}
 
 

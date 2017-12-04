@@ -13,7 +13,7 @@ public class TcpipDeviceProperty extends DeviceProperty implements Classifier,Se
 	//public func
 	@Override
 	public void readFunc(byte header, SocketComm sc) {
-		SlaveList.getInstance().slaveAdd(this);
+		SlaveList.add(this);
 	}
 
 	public TcpipDeviceProperty(IndoorLocation location, String ip,int port,String name, ArrayList<String> function,int classify){

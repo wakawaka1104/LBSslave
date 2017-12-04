@@ -72,7 +72,6 @@ public abstract class SocketComm implements Serializable{
 				tmp.flip();
 				while(tmp.hasRemaining()){
 					byte a = tmp.get();
-					System.out.println(a);
 					contentsList.add(a);
 				}
 				tmp.clear();

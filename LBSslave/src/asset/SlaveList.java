@@ -55,7 +55,7 @@ public class SlaveList implements Classifier,Serializable{
     public static DeviceProperty slaveSearch(String deviceName){
         for(Iterator<DeviceProperty> it = SlaveList.getInstance().slaveList.iterator(); it.hasNext();){
             DeviceProperty tmp = it.next();
-            if(tmp.getName()==deviceName){
+            if(tmp.getName().equals(deviceName)){
                 return tmp;
             }
         }
@@ -89,9 +89,52 @@ public class SlaveList implements Classifier,Serializable{
 		}
 	}
 
-	public void slaveAdd(DeviceProperty a){
-		slaveList.add(a);
-		System.out.println(toString());
+	public static void clearList(){
+		SlaveList.getInstance().getList().clear();
+	}
+
+
+	synchronized public static void listUpdate(String[] posPacket){
+		//posPacket
+		//[0]:"POS"
+		//[1]:固定機シリアル番号
+		//[2]:移動機シリアル番号
+		//[3]:測位計算結果座標x
+		//[4]:y
+		//[5]:z
+		//[6]:有効な測距結果を得た固定機数
+		//[7]:測位年月日 yy/mm/dd
+		//[8]:測位時刻 hh:mm::ss.msms
+		//[9]:ignored data
+
+		//name = シリアル番号
+		//リスト中に同名のクライアントがあれば、それを更新
+		//なければadd
+
+		IndoorLocation loc = new IndoorLocation(Double.parseDouble(posPacket[3]),Double.parseDouble(posPacket[4]),Double.parseDouble(posPacket[5]));
+
+		for(Iterator<DeviceProperty> it = SlaveList.getInstance().slaveList.iterator();it.hasNext();){
+			DeviceProperty tmp = it.next();
+			if(posPacket[2].equals(tmp.getName())){
+				//更新
+				tmp.setLocation(loc);
+				SlaveList.writeList();
+				System.out.println("SlaveListUpdated:" + SlaveList.getInstance().toString());
+				return;
+			}
+		}
+		//同名なしならadd
+		SlaveList.add(new DeviceProperty(loc,posPacket[1],new ArrayList<String>(),0));
+		SlaveList.writeList();
+		System.out.println("SlaveListUpdated:" + SlaveList.getInstance().toString());
+
+	}
+
+
+	public static void add(DeviceProperty a){
+		SlaveList.getInstance().getList().add(a);
+		SlaveList.writeList();
+		System.out.println("SlaveListUpdated:\n" + SlaveList.getInstance().toString());
 	}
 
 	public String toString(){
@@ -122,8 +165,53 @@ public class SlaveList implements Classifier,Serializable{
 //		writeList();
 
 		//read
-		loadList();
+//		loadList();
+//		System.out.println(SlaveList.getInstance().toString());
+
+		//clear
+		clearList();
 		System.out.println(SlaveList.getInstance().toString());
+
+//		//ADD test method
+//
+//		SlaveList.loadList();
+//
+//		ArrayList<String> func1 = new ArrayList<>();
+//		func1.add("file receive");
+//		DeviceProperty prop1 = new DeviceProperty(new IndoorLocation(5750,2500,1200),"test1",func1,1001);
+//		prop1.readFunc((byte)0, null);
+//
+//		ArrayList<String> func2 = new ArrayList<>();
+//		func2.add("cooperation");
+//		func2.add("get administration");
+//		DeviceProperty prop2 = new DeviceProperty(new IndoorLocation(5750,3200,1200),"test2",func2,1002);
+//
+//		//update test
+//		System.out.println("[Update test]");
+//		System.out.println("*****preview*****");
+//		System.out.println(SlaveList.getInstance().toString());
+//		System.out.println("*****************");
+//
+//		new DeviceProperty(new IndoorLocation(1,1,1),"test1",func1,1001).readFunc((byte)0,null);
+//
+//		System.out.println("*****result*****");
+//		System.out.println(SlaveList.getInstance().toString());
+//		System.out.println("*****************");
+//
+//		//add test
+//		System.out.println("[add test]");
+//		System.out.println("*****preview*****");
+//		System.out.println(SlaveList.getInstance().toString());
+//		System.out.println("*****************");
+//
+//		prop2.readFunc((byte)0, null);
+//
+//		System.out.println("*****result*****");
+//		System.out.println(SlaveList.getInstance().toString());
+//		System.out.println("*****************");
+//
+//		SlaveList.writeList();
+
 
 	}
 
