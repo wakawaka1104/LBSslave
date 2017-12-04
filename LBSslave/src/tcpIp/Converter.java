@@ -22,16 +22,25 @@ public class Converter {
 
 	public static byte[] serialize(Classifier cl, byte header) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		baos.write(Constants.INITIAL_BYTE);
 		baos.write(header);
 		ObjectOutput oo = new ObjectOutputStream(baos);
 		oo.writeObject(cl);
-		return baos.toByteArray();
+		baos.write(Constants.END_BYTE);
+
+		//何故かreturn baos.toByteArray()とすると、
+		//有効なデータの先に謎の0埋めが発生する
+		//こうして一度ローカル変数に格納してからreturnすると大丈夫
+		//謎of謎
+		byte[] tmp = baos.toByteArray();
+		return tmp;
 
 	}
 
 	public static Object deserialize(byte[] contents) throws ClassifierReadException{
 		try{
-			ByteArrayInputStream bais = new ByteArrayInputStream(contents,1,contents.length-1);
+			//INITIAL_BYTEはdoRead()の処理で既にはじいているので、END_BYTEの末尾8バイトのみ読まない
+			ByteArrayInputStream bais = new ByteArrayInputStream(contents,1,contents.length-9);
 			ObjectInputStream ois = new ObjectInputStream(bais);
 			Object tmp = ois.readObject();
 			bais.close();

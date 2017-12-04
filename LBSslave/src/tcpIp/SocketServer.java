@@ -112,7 +112,7 @@ public class SocketServer extends SocketComm implements Runnable{
 			}
 			e.printStackTrace();
 		}
-		System.out.println("sendList add:" + ob.getClassName());
+//		System.out.println("sendList add:" + ob.getClassName());
 	}
 
 

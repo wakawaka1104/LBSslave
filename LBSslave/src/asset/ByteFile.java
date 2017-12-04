@@ -51,7 +51,7 @@ public class ByteFile implements Serializable, Classifier {
 //	public static void main(String[] args) {
 //		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //		try {
-//			ImageIO.write(ImageIO.read(new File("img"+File.separator+"poputepic.png")), "png", baos);
+//			ImageIO.write(ImageIO.read(new File("img"+File.separator+"screenshot.png")), "png", baos);
 //		} catch (IOException e) {
 //			System.err.println("Order.readFunc()[error]:can't find the file");
 //			e.printStackTrace();

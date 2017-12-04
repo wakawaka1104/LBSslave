@@ -2,7 +2,11 @@ package gui;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -11,16 +15,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import asset.ByteFile;
 import asset.DeviceProperty;
 import asset.IndoorLocation;
-import asset.MyProperty;
-import tcpIp.SocketServer;
+import tcpIp.Converter;
+import tcpIp.SocketClient;
 
 /**
  * @author shun
  *
  */
-public class MainWindow extends JFrame {
+public class TestWindow extends JFrame {
 
 	private static final int SERVER_PORT = 11111;
 
@@ -40,7 +45,7 @@ public class MainWindow extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow frame = new MainWindow();
+					TestWindow frame = new TestWindow();
 					frame.setVisible(true);
 //					myProp.setLocation(new IndoorLocation(Double.parseDouble(JOptionPane.showInputDialog("x")), Double.parseDouble(JOptionPane.showInputDialog("y")), Double.parseDouble(JOptionPane.showInputDialog("z"))));
 					myProp.setLocation(new IndoorLocation(1,1,1));
@@ -58,7 +63,7 @@ public class MainWindow extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MainWindow() {
+	public TestWindow() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -87,25 +92,21 @@ public class MainWindow extends JFrame {
 			String addr;
 			try {
 
-				MyProperty.setFunction("camera");
+				SocketClient sc = new SocketClient("localhost", 11111);
+				Thread t = new Thread(sc);
+				t.start();
 
-				addr = "localhost";
-				SocketServer ss = new SocketServer(addr,port);
-				Thread serverThread = new Thread(ss);
-				serverThread.start();
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				try {
+					ImageIO.write(ImageIO.read(new File("img"+File.separator+"screenshot.png")), "png", baos);
+				} catch (IOException _e) {
+					System.err.println("Order.readFunc()[error]:can't find the file");
+					_e.printStackTrace();
+				}
 
-
-//				SocketClient sc = new SocketClient(addr, SERVER_PORT);
-//				Thread clientThread = new Thread(sc);
-//				clientThread.start();
-//
-
-
-//				TcpipDeviceProperty testDevice = new TcpipDeviceProperty(new IndoorLocation(10, 10, 10),"testDevice",22222,"localhost");
-//				sc.asyncSend(testDevice, (byte)0);
-//				Thread.sleep(500);
-//				sc.asyncSend(new IndoorLocation(9, 8, 9), (byte)0);
-
+				ByteFile bf = new ByteFile(baos.toByteArray(), "png");
+				System.out.println(	"bfSize = "+Converter.serialize(bf, (byte)0).length );
+				sc.asyncSend(bf,(byte)0);
 
 			} catch (Exception e1) {
 				System.err.println("aaa");

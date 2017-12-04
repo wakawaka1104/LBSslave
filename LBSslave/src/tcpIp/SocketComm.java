@@ -15,12 +15,18 @@ import asset.Classifier;
 public abstract class SocketComm implements Serializable{
 
 	//**********private member
-	protected final static int BUF_SIZE = 1024;
+	protected final static int BUF_SIZE = 4096;
 	protected String addr;
 	protected int port;
 	protected Selector selector;
 	//sendDataはFOLIの待ち行列
 	protected LinkedList<byte[]> sendData;
+	//開始文字列段階判別
+	private byte initialProcess = 0;
+	private boolean initial = false;
+	//修了文字列段階判別
+	private byte endProcess = 8;
+	private boolean end = false;
 	//***************************
 
 	//***********constructor
@@ -50,7 +56,11 @@ public abstract class SocketComm implements Serializable{
 			writeBuffer.flip();
 
 			//send処理
-			channel.write(writeBuffer);
+			while(writeBuffer.hasRemaining()){
+				int writeSize = channel.write(writeBuffer);
+//				System.out.println("writeSize = "+writeSize);
+//				System.out.println("writeRemainng = "+writeBuffer.remaining());
+			}
 			System.out.println( getClassName() + ":Send:[" + new Timestamp(System.currentTimeMillis()).toString() + "]");
 			writeBuffer.clear();
 			return;
@@ -66,22 +76,48 @@ public abstract class SocketComm implements Serializable{
 			ArrayList<Byte> contentsList = new ArrayList<Byte>();
 			//channelから読み取るバイトを一時保持する変数
 			ByteBuffer tmp = ByteBuffer.allocate(BUF_SIZE);
-//			System.out.println( getClassName() + ":Read:[" + new Timestamp(System.currentTimeMillis()).toString() + "]");
+			//			System.out.println( getClassName() + ":Read:[" + new Timestamp(System.currentTimeMillis()).toString() + "]");
+			initial = false;
+			initialProcess = (byte)0;
+			end = false;
+			endProcess = (byte)8;
+
 			while(true){
-				if(channel.read(tmp) <= 0) break;
+				tmp.clear();
+				int readSize = channel.read(tmp);
+//				System.out.println("readSize:"+readSize);
+				if(readSize < 0) break;
+				else if(readSize == 0) continue;
+
 				tmp.flip();
-				while(tmp.hasRemaining()){
-					byte a = tmp.get();
-					contentsList.add(a);
+
+				if(!initial){
+					while(tmp.hasRemaining()){
+						byte a = tmp.get();
+						processUpdate(a);
+						if(initial) break;
+					}
 				}
+
+				if(initial){
+					while(tmp.hasRemaining()){
+						byte a = tmp.get();
+						contentsList.add(a);
+						processUpdate(a);
+						if(end) break;
+					}
+				}
+				if(end) break;
 				tmp.clear();
 			}
+
+			//channelからのreadが負->強制終了
+			if(!end) return;
+
 			int contentsSize = contentsList.size();
-			if(contentsSize <= 0) {
-				System.out.println("contentsSize==0");
-				return;
-			}
+
 			byte[] contents = new byte[contentsSize];
+//			System.out.println("contentsSize = "+contentsSize);
 			//頭悪い配列結合の図
 			for(int i = 0 ; i < contentsSize ; i++){
 				contents[i] = contentsList.get(i);
@@ -112,6 +148,35 @@ public abstract class SocketComm implements Serializable{
 			} catch (Exception _e) {
 				System.err.println("チャネルクローズ時にエラーが発生しました.");
 				_e.printStackTrace();
+			}
+		}
+	}
+	private void processUpdate(byte a) {
+		//initial process update
+		if(!initial){
+			if(a == initialProcess){
+				initialProcess++;
+				if(initialProcess == (byte)8){
+					initial = true;
+					initialProcess = (byte)0;
+				}
+			}else{
+				initialProcess = (byte)0;
+			}
+		}
+
+		//end process update
+		if(!end){
+			if(initial){
+				if(a == endProcess){
+					endProcess--;
+					if(endProcess == (byte)0){
+						end = true;
+						endProcess = (byte)8;
+					}
+				}else{
+					endProcess = (byte)8;
+				}
 			}
 		}
 	}

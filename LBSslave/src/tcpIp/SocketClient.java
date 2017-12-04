@@ -8,15 +8,12 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
 import asset.ByteFile;
 import asset.Classifier;
-import asset.DeviceProperty;
-import asset.IndoorLocation;
 
 public class SocketClient extends SocketComm implements Runnable,Serializable{
 
@@ -109,7 +106,7 @@ public class SocketClient extends SocketComm implements Runnable,Serializable{
 			}
 			e.printStackTrace();
 		}
-		System.out.println("sendList add:" + ob.getClassName());
+//		System.out.println("sendList add:" + ob.getClassName());
 	}
 
 
@@ -127,31 +124,38 @@ public class SocketClient extends SocketComm implements Runnable,Serializable{
 		client.start();
 
 		try{
-			//sendテスト1
-			byte[] tmp = {0,1,1,1,1,1,0,1,0,0,0,1};
-			sc.asyncSend(tmp);
-			System.out.println("test1 completed");
-			Thread.sleep(500);
+//			//sendテスト1
+//			sc.asyncSend(new Message("test message"), (byte)0);
+//			System.out.println("test1 completed");
+//			Thread.sleep(500);
+//
+//			DeviceProperty prop = new DeviceProperty(new IndoorLocation(1,1,1),"testDevice",new ArrayList<String>(), 1);
+//			sc.asyncSend(prop, (byte)1);
+//			System.out.println("test1-2 completed");
+//			Thread.sleep(500);
+//
+//			//連続sendテスト2
+//			for(int i=0 ; i < 5 ; i++){
+//				sc.asyncSend(new DeviceProperty(new IndoorLocation(1,1,1),"testDevice"+ i,new ArrayList<String>(),1),(byte)1);
+//				//現状同一channelへの書き込みはある程度のインターバルを空ける必要あり
+//				Thread.sleep(500);
+//			}
+//			System.out.println("test2 completed");
+//			Thread.sleep(500);
 
-			DeviceProperty prop = new DeviceProperty(new IndoorLocation(1,1,1),"testDevice",new ArrayList<String>(), 1);
-			sc.asyncSend(prop, (byte)1);
-			System.out.println("test1-2 completed");
-			Thread.sleep(500);
-
-			//連続sendテスト2
-			for(int i=0 ; i < 5 ; i++){
-				sc.asyncSend(new DeviceProperty(new IndoorLocation(1,1,1),"testDevice"+ i,new ArrayList<String>(),1),(byte)1);
-				//現状同一channelへの書き込みはある程度のインターバルを空ける必要あり
-				Thread.sleep(500);
-			}
-			System.out.println("test2 completed");
-			Thread.sleep(500);
-
-			//サイズ大のsendテスト3
+//			//サイズ大のsendテスト3
+//			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//			ImageIO.write(ImageIO.read(new File("img"+File.separator+"poputepic.png")), "png", baos);
+//			sc.asyncSend(new ByteFile(baos.toByteArray(),"png"), (byte)0);
+//			System.out.println("test3 completed");
+//
+			//サイズ超大のsendテスト4
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(ImageIO.read(new File("img"+File.separator+"poputepic.png")), "png", baos);
+			ImageIO.write(ImageIO.read(new File("img"+File.separator+"screenshot.png")), "png", baos);
 			sc.asyncSend(new ByteFile(baos.toByteArray(),"png"), (byte)0);
-			System.out.println("test3 completed");
+			System.out.println("test4 completed");
+
+
 
 		}catch(Exception e){
 			e.printStackTrace();
