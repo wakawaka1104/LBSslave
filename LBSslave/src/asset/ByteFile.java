@@ -22,6 +22,7 @@ public class ByteFile implements Serializable, Classifier {
 	public void readFunc(byte header, SocketComm sc) {
 		FilePresentationWindow fpw = new FilePresentationWindow();
 		fpw.setImageIcon(new ImageIcon(file));
+		fpw.setVisible(true);
 	}
 
 	public byte[] getFile() {
@@ -46,6 +47,19 @@ public class ByteFile implements Serializable, Classifier {
 	}
 
 
+	//test method
+//	public static void main(String[] args) {
+//		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//		try {
+//			ImageIO.write(ImageIO.read(new File("img"+File.separator+"poputepic.png")), "png", baos);
+//		} catch (IOException e) {
+//			System.err.println("Order.readFunc()[error]:can't find the file");
+//			e.printStackTrace();
+//		}
+//		System.out.println("start");
+//		new ByteFile(baos.toByteArray(),"png").readFunc((byte)0, null);
+//		System.out.println("end");
+//	}
 
 
 }
