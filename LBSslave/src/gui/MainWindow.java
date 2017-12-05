@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.net.InetAddress;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -15,6 +16,8 @@ import javax.swing.border.EmptyBorder;
 import asset.DeviceProperty;
 import asset.IndoorLocation;
 import asset.MyProperty;
+import asset.TcpipDeviceProperty;
+import tcpIp.SocketClient;
 import tcpIp.SocketServer;
 
 /**
@@ -27,6 +30,7 @@ public class MainWindow extends JFrame {
 
 	public  static DeviceProperty myProp = new DeviceProperty();
 	private static int port;
+	public static  String SERVER_IP = "";
 
 	private JPanel contentPane;
 	private JLabel stateLabel = new JLabel("none");
@@ -49,6 +53,8 @@ public class MainWindow extends JFrame {
 //					myProp.setName("test");
 					port = (Integer.parseInt(JOptionPane.showInputDialog("port number")));
 //					port = 11111;
+					SERVER_IP = (JOptionPane.showInputDialog("ServerIP"));
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -85,29 +91,25 @@ public class MainWindow extends JFrame {
 //			System.out.println(Property.getInstance().getLocation().toString());
 
 
-			String addr;
 			try {
 
 				MyProperty.setFunction("camera");
 				MyProperty.setName(myProp.getName());
 
-				addr = "localhost";
-				SocketServer ss = new SocketServer(addr,port);
+				SocketServer ss = new SocketServer("localhost",port);
 				Thread serverThread = new Thread(ss);
 				serverThread.start();
 
+				SocketClient sc = new SocketClient(SERVER_IP, SERVER_PORT);
+				Thread clientThread = new Thread(sc);
+				clientThread.start();
 
-//				SocketClient sc = new SocketClient(addr, SERVER_PORT);
-//				Thread clientThread = new Thread(sc);
-//				clientThread.start();
-//
-
-
-//				TcpipDeviceProperty testDevice = new TcpipDeviceProperty(new IndoorLocation(10, 10, 10),"testDevice",22222,"localhost");
-//				sc.asyncSend(testDevice, (byte)0);
-//				Thread.sleep(500);
-//				sc.asyncSend(new IndoorLocation(9, 8, 9), (byte)0);
-
+				sc.asyncSend(new TcpipDeviceProperty(new IndoorLocation(0,0,0),
+						InetAddress.getLocalHost().getHostAddress(),
+						port,
+						myProp.getName(),
+						myProp.getFunction(),
+						1), (byte)0);
 
 			} catch (Exception e1) {
 				System.err.println("aaa");
