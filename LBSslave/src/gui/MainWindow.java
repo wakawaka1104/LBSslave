@@ -47,8 +47,8 @@ public class MainWindow extends JFrame {
 					myProp.setLocation(new IndoorLocation(1,1,1));
 					myProp.setName(JOptionPane.showInputDialog("name"));
 //					myProp.setName("test");
-//					port = (Integer.parseInt(JOptionPane.showInputDialog("port number")));
-					port = 11111;
+					port = (Integer.parseInt(JOptionPane.showInputDialog("port number")));
+//					port = 11111;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
