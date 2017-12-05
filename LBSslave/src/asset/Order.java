@@ -77,6 +77,9 @@ public class Order implements Serializable, Classifier {
 		case "file receive":
 
 			break;
+		case "greeting":
+			sc.asyncSend(new Message("["+ MyProperty.getName() +"]:Hello,Client!"), (byte)0);
+			break;
 		default:
 			break;
 		}

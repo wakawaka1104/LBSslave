@@ -8,6 +8,7 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -24,7 +25,7 @@ public class MainWindow extends JFrame {
 
 	private static final int SERVER_PORT = 11111;
 
-	private static DeviceProperty myProp = new DeviceProperty();
+	public  static DeviceProperty myProp = new DeviceProperty();
 	private static int port;
 
 	private JPanel contentPane;
@@ -44,8 +45,8 @@ public class MainWindow extends JFrame {
 					frame.setVisible(true);
 //					myProp.setLocation(new IndoorLocation(Double.parseDouble(JOptionPane.showInputDialog("x")), Double.parseDouble(JOptionPane.showInputDialog("y")), Double.parseDouble(JOptionPane.showInputDialog("z"))));
 					myProp.setLocation(new IndoorLocation(1,1,1));
-//					myProp.setName(JOptionPane.showInputDialog("name"));
-					myProp.setName("test");
+					myProp.setName(JOptionPane.showInputDialog("name"));
+//					myProp.setName("test");
 //					port = (Integer.parseInt(JOptionPane.showInputDialog("port number")));
 					port = 11111;
 				} catch (Exception e) {
@@ -88,6 +89,7 @@ public class MainWindow extends JFrame {
 			try {
 
 				MyProperty.setFunction("camera");
+				MyProperty.setName(myProp.getName());
 
 				addr = "localhost";
 				SocketServer ss = new SocketServer(addr,port);
