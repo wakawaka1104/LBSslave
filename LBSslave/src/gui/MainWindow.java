@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.EventQueue;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.net.InetAddress;
 
@@ -117,5 +118,8 @@ public class MainWindow extends JFrame {
 			}
 
 		}
+	}
+	public Rectangle getPosition(){
+		return new Rectangle(getX(),getY(),0,0);
 	}
 }
