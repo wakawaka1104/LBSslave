@@ -46,7 +46,7 @@ public class Order implements Serializable, Classifier {
 			System.out.println("File sent");
 			break;
 		case "camera":
-			if(functionSearch("camera")){
+//			if(functionSearch("camera")){
 //			if(true){
 				Webcam webcam = null;
 				webcam = Webcam.getDefault();
@@ -72,7 +72,7 @@ public class Order implements Serializable, Classifier {
 					System.out.println("Failed: Webcam Not Found Error");
 				}
 
-			}else if(functionSearch("display")){			}
+//			}else if(functionSearch("display")){			}
 			break;
 		case "file receive":
 
