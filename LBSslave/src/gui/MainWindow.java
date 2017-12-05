@@ -3,7 +3,6 @@ package gui;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.net.InetAddress;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -17,7 +16,6 @@ import javax.swing.border.EmptyBorder;
 import asset.DeviceProperty;
 import asset.IndoorLocation;
 import asset.MyProperty;
-import asset.TcpipDeviceProperty;
 import tcpIp.SocketClient;
 import tcpIp.SocketServer;
 
@@ -48,8 +46,8 @@ public class MainWindow extends JFrame {
 				try {
 					MainWindow frame = new MainWindow();
 					frame.setVisible(true);
-//					myProp.setLocation(new IndoorLocation(Double.parseDouble(JOptionPane.showInputDialog("x")), Double.parseDouble(JOptionPane.showInputDialog("y")), Double.parseDouble(JOptionPane.showInputDialog("z"))));
-					myProp.setLocation(new IndoorLocation(1,1,1));
+					myProp.setLocation(new IndoorLocation(Double.parseDouble(JOptionPane.showInputDialog("x")), Double.parseDouble(JOptionPane.showInputDialog("y")), Double.parseDouble(JOptionPane.showInputDialog("z"))));
+//					myProp.setLocation(new IndoorLocation(1,1,1));
 					myProp.setName(JOptionPane.showInputDialog("name"));
 //					myProp.setName("test");
 					port = (Integer.parseInt(JOptionPane.showInputDialog("port number")));
@@ -105,12 +103,12 @@ public class MainWindow extends JFrame {
 				Thread clientThread = new Thread(sc);
 				clientThread.start();
 
-				sc.asyncSend(new TcpipDeviceProperty(new IndoorLocation(0,0,0),
-						InetAddress.getLocalHost().getHostAddress(),
-						port,
-						myProp.getName(),
-						myProp.getFunction(),
-						1), (byte)0);
+//				sc.asyncSend(new TcpipDeviceProperty(new IndoorLocation(0,0,0),
+//						InetAddress.getLocalHost().getHostAddress(),
+//						port,
+//						myProp.getName(),
+//						myProp.getFunction(),
+//						1), (byte)0);
 
 			} catch (Exception e1) {
 				System.err.println("aaa");
