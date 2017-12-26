@@ -37,19 +37,21 @@ public class Order implements Serializable, Classifier {
 		case "file send":
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			try {
-				ImageIO.write(ImageIO.read(new File("img"+File.separator+"poputepic.png")), "png", baos);
+				ImageIO.write(ImageIO.read(new File("img"+File.separator+"Flower1.jpg")), "jpg", baos);
 			} catch (IOException e) {
 				System.err.println("Order.readFunc()[error]:can't find the file");
 				e.printStackTrace();
 			}
 			sc.asyncSend(new ByteFile(baos.toByteArray(),"png"),(byte)0);
+			
 			System.out.println("File sent");
 			break;
 		case "camera":
 //			if(functionSearch("camera")){
 //			if(true){
 				Webcam webcam = null;
-				webcam = Webcam.getDefault();
+//				webcam = Webcam.getDefault();
+				webcam = Webcam.getWebcams().get(1);
 				if (webcam != null) {
 					System.out.println("Webcam : " + webcam.getName());
 					webcam.open();

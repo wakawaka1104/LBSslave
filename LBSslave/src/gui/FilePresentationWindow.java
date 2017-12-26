@@ -47,7 +47,7 @@ public class FilePresentationWindow extends JFrame {
 	}
 	public void setImageIcon(ImageIcon ii){
 		label.setIcon(ii);
-		nowPosition = new Rectangle(0,0,0,0);
+		nowPosition = new Rectangle(2000,0,0,0);
 		setBounds(nowPosition);
 		setSize(ii.getIconWidth(), ii.getIconHeight());
 	}
